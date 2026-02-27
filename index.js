@@ -52,12 +52,12 @@ app.use("/api/dashboard", dashboardOverviewRoute);
 
 // Test route
 app.get("/", (req, res) => {
-  res.send("Backend is running 🚀");
+  res.send("Backend 2 is running 🚀");
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server2 running on port ${PORT}`);
 });
 
 module.exports = app;
