@@ -1,0 +1,146 @@
+const PMSProfitLoss = require("../models/profitOrLossModel");
+const BankBalance = require("../models/bankModel");
+const RetainedEarnings = require("../models/retainedEarnings");
+
+/* =========================
+   CREATE PMS P&L
+========================= */
+exports.createPMSPL = async (req, res) => {
+  try {
+    const { periodFrom, periodTo, purchaseCost, cashAdjustments } = req.body;
+
+    const bank = await BankBalance.findOne();
+    if (!bank) {
+      return res.status(400).json({ msg: "Bank balance not initialized" });
+    }
+
+    const pl = await PMSProfitLoss.create({
+      periodFrom,
+      periodTo,
+      pmsNetSales: bank.PMS,
+      purchaseCost,
+      cashAdjustments: cashAdjustments || 0,
+      createdBy: req.user.id
+    });
+
+    res.status(201).json({
+      msg: "PMS P&L created",
+      pl
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      msg: "Failed to create PMS P&L",
+      error: error.message
+    });
+  }
+};
+
+exports.submitPMSPL = async (req, res) => {
+  try {
+    const pl = await PMSProfitLoss.findById(req.params.id);
+
+    if (!pl) {
+      return res.status(404).json({ msg: "P&L record not found" });
+    }
+
+    if (pl.status !== "draft") {
+      return res.status(400).json({ msg: "Already submitted" });
+    }
+
+    pl.status = "submitted";
+    await pl.save();
+
+    res.json({ msg: "PMS P&L submitted for approval" });
+
+  } catch (error) {
+    res.status(500).json({
+      msg: "Failed to submit PMS P&L"
+    });
+  }
+};
+
+exports.approvePMSPL = async (req, res) => {
+  try {
+    const pl = await PMSProfitLoss.findById(req.params.id);
+
+    if (!pl) {
+      return res.status(404).json({ msg: "P&L report not found" });
+    }
+
+    if (pl.status === "approved") {
+      return res.status(400).json({ msg: "P&L already approved" });
+    }
+
+    const bank = await BankBalance.findOne();
+    const retained = await RetainedEarnings.findOne();
+
+    if (!bank || !retained) {
+      return res.status(400).json({
+        msg: "Bank balance or retained earnings not initialized"
+      });
+    }
+
+    // ✅ ALWAYS deduct exact P/L from bank
+    bank.PMS -= pl.profitOrLoss;
+
+    // ✅ ALWAYS reflect in retained earnings
+    retained.balance += pl.profitOrLoss;
+
+    pl.status = "approved";
+    pl.approvedBy = req.user.id;
+    pl.approvedAt = new Date();
+
+    await bank.save();
+    await retained.save();
+    await pl.save();
+
+    res.json({
+      msg: "P&L approved successfully",
+      netResult: pl.profitOrLoss,
+      bankBalance: bank.PMS,
+      retainedEarnings: retained.balance
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      msg: "Failed to approve P&L",
+      error: error.message
+    });
+  }
+};
+
+
+//get all PMS P&L records
+exports.getAllPMSPL = async (req, res) => {
+  try {
+    const pls = await PMSProfitLoss.find().populate(
+      "createdBy",
+      "name email"
+    ).populate("approvedBy", "name email");
+    res.json({ pls });
+  } catch (error) {
+    res.status(500).json({
+      msg: "Failed to fetch PMS P&L records",
+      error: error.message
+    });
+  }
+};
+
+//get single PMS P&L by ID
+exports.getPMSPLById = async (req, res) => {
+  try {
+    const pl = await PMSProfitLoss.findById(req.params.id)
+      .populate("createdBy", "name email")
+      .populate("approvedBy", "name email");
+    if (!pl) {
+      return res.status(404).json({ msg: "P&L record not found" });
+    }
+    res.json({ pl });
+  } catch (error) {
+    res.status(500).json({
+      msg: "Failed to fetch PMS P&L record",
+        error: error.message
+    });
+  } 
+};
