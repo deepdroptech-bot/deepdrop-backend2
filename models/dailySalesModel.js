@@ -43,7 +43,7 @@ const pmsPumpSchema = new mongoose.Schema(
   {
     pumpNumber: {
       type: Number,
-      enum: [1, 2],
+      enum: [1, 2, 3, 4],
       required: true
     },
 
@@ -99,8 +99,8 @@ PMS: {
   pumps: {
     type: [pmsPumpSchema],
     validate: {
-      validator: v => v.length === 2,
-      message: "PMS must have exactly 2 pumps"
+      validator: v => v.length === 4,
+      message: "PMS must have exactly 4 pumps"
     }
   },
 

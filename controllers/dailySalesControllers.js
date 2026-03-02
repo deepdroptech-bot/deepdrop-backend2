@@ -81,22 +81,26 @@ exports.approveDailySales = async (req, res) => {
     inventory.fuel.PMS.totalQuantity -= sales.PMS.totalLitres;
     inventory.fuel.AGO.quantityLitres -= sales.AGO.litresSold;
 
-    //divide totallitres sold across wells proportionally
-    const pmsWells = inventory.fuel.PMS.wells;
-    const totalPMSInInventory = pmsWells.reduce(
-      (sum, well) => sum + well.quantity,
-      0
-    );
-    pmsWells.forEach(well => {
-      const proportion =
-        totalPMSInInventory > 0
-          ? well.quantity / totalPMSInInventory
-          : 0;
-      const litresToDeduct = sales.PMS.totalLitres * proportion;
-      well.quantity -= litresToDeduct;
-      if (well.quantity < 0) well.quantity = 0; //prevent negative stock
-    });
+    //deduct PMS sold from respective wells(Total litres of pump 1 and 2 deducted from well 1 and total litres of pump 3 and 4 deducted from well 2)
+  if (Array.isArray(sales.PMS.pumps)) {
+  const pump1Litres = sales.PMS.pumps
+    .filter(p => p.pumpNumber === 1)
+    .reduce((sum, p) => sum + p.litresSold, 0);
+  const pump2Litres = sales.PMS.pumps
+    .filter(p => p.pumpNumber === 2)
+    .reduce((sum, p) => sum + p.litresSold, 0);
+  const pump3Litres = sales.PMS.pumps
+    .filter(p => p.pumpNumber === 3)
+    .reduce((sum, p) => sum + p.litresSold, 0);
+  const pump4Litres = sales.PMS.pumps
+    .filter(p => p.pumpNumber === 4)
+    .reduce((sum, p) => sum + p.litresSold, 0);
+    
 
+  //deduct PMS from respective wells
+  inventory.fuel.PMS.wells[0].quantity -= pump1Litres + pump2Litres;
+  inventory.fuel.PMS.wells[1].quantity -= pump3Litres + pump4Litres;
+}
   //deduct products sold from inventory stock
  if (Array.isArray(sales.productsSold)) {
   sales.productsSold.forEach(soldItem => {
