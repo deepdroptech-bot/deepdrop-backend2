@@ -24,7 +24,7 @@ connectDB();
 // ✅ CORS MUST COME AFTER app IS CREATED
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://deepdrroptech.netlify.app",
+  "https://ekiosadeepdrop.netlify.app",
 ];
 
 app.use(
@@ -55,7 +55,7 @@ app.get("/", (req, res) => {
   res.send("Backend 2 is running 🚀");
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 6000;
 app.listen(PORT, () => {
   console.log(`Server2 running on port ${PORT}`);
 });
