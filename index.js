@@ -25,7 +25,7 @@ connectDB();
 // ✅ CORS MUST COME AFTER app IS CREATED
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://ekiosadeepdrop.netlify.app",
+  "https://ekiosadeepdroop.netlify.app",
 ];
 
 app.use(
