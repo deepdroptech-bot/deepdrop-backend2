@@ -14,6 +14,7 @@ const expenseRoutes = require("./routes/expenseRoutes");
 const retainedEarningsRoutes = require("./routes/retainedEarningsRoutes");
 const profitOrLossRoutes = require("./routes/profitOrLossRoutes");
 const dashboardOverviewRoute = require("./routes/dashboardOverviewRoute");
+const pdfRouter = require("./routes/pdfRouter");
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ app.use("/api/expenses", expenseRoutes);
 app.use("/api/retained-earnings", retainedEarningsRoutes);
 app.use("/api/pms-pl", profitOrLossRoutes);
 app.use("/api/dashboard", dashboardOverviewRoute);
+app.use("/api/pdf", pdfRouter);
 
 // Test route
 app.get("/", (req, res) => {
