@@ -85,16 +85,16 @@ exports.approveDailySales = async (req, res) => {
   if (Array.isArray(sales.PMS.pumps)) {
   const pump1Litres = sales.PMS.pumps
     .filter(p => p.pumpNumber === 1)
-    .reduce((sum, p) => sum + p.litresSold, 0);
+    .reduce((sum, p) => sum + p.netLitresSold, 0);
   const pump2Litres = sales.PMS.pumps
     .filter(p => p.pumpNumber === 2)
-    .reduce((sum, p) => sum + p.litresSold, 0);
+    .reduce((sum, p) => sum + p.netLitresSold, 0);
   const pump3Litres = sales.PMS.pumps
     .filter(p => p.pumpNumber === 3)
-    .reduce((sum, p) => sum + p.litresSold, 0);
+    .reduce((sum, p) => sum + p.netLitresSold, 0);
   const pump4Litres = sales.PMS.pumps
     .filter(p => p.pumpNumber === 4)
-    .reduce((sum, p) => sum + p.litresSold, 0);
+    .reduce((sum, p) => sum + p.netLitresSold, 0);
     
 
   //deduct PMS from respective wells

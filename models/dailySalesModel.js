@@ -40,29 +40,47 @@ const productSoldSchema = new mongoose.Schema(
 
 /* ---------- PMS PUMP SCHEMA ---------- */
 const pmsPumpSchema = new mongoose.Schema(
-  {
-    pumpNumber: {
-      type: Number,
-      enum: [1, 2, 3, 4],
-      required: true
-    },
-
-    openingMeter: {
-      type: Number,
-      required: true
-    },
-
-    closingMeter: {
-      type: Number,
-      required: true
-    },
-
-    litresSold: {
-      type: Number,
-      default: 0
-    }
+{
+  pumpNumber: {
+    type: Number,
+    enum: [1,2,3,4],
+    required: true
   },
-  { _id: false }
+
+  openingMeter: {
+    type: Number,
+    required: true
+  },
+
+  closingMeter: {
+    type: Number,
+    required: true
+  },
+
+  meterLitres: {
+    type: Number,
+    default: 0
+  },
+
+  calibrationLitres: {
+    type: Number,
+    default: 0
+  },
+
+  netLitresSold: {
+    type: Number,
+    default: 0
+  },
+
+  calibrationReason: String,
+
+  calibratedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  }
+
+},
+{ _id:false }
 );
 
 /* ---------- GENERIC METER SCHEMA (AGO) ---------- */
@@ -70,6 +88,11 @@ const meterSaleSchema = new mongoose.Schema(
   {
     openingMeter: Number,
     closingMeter: Number,
+    calibrationLitres: {
+      type: Number,
+      default: 0
+    },
+    calibrationReason: String,
     litresSold: Number,
     pricePerLitre: Number,
     totalAmount: Number,
@@ -109,10 +132,14 @@ PMS: {
     required: true
   },
 
+  totalMeterLitres: Number,
+  totalCalibrationLitres: Number,
   totalLitres: Number,
+
   totalAmount: Number,
 
   expenses: [expenseSchema],
+
   totalExpenses: {
     type: Number,
     default: 0
@@ -205,40 +232,49 @@ isLocked: {
 
 dailySalesSchema.pre("save", function (next) {
   /* ========= PMS CALCULATIONS ========= */
-  let pmsTotalLitres = 0;
 
-  this.PMS.pumps.forEach(pump => {
-    pump.litresSold = pump.closingMeter - pump.openingMeter;
-    pmsTotalLitres += pump.litresSold;
-  });
+let totalMeterLitres = 0;
+let totalCalibrationLitres = 0;
+let totalNetLitres = 0;
 
-  this.PMS.totalLitres = pmsTotalLitres;
-  this.PMS.totalAmount =
-    pmsTotalLitres * this.PMS.pricePerLitre;
+this.PMS.pumps.forEach(pump => {
 
-  this.PMS.totalExpenses = this.PMS.expenses.reduce(
-    (sum, e) => sum + e.amount,
-    0
-  );
+  // litres from meter
+  pump.meterLitres =
+    pump.closingMeter - pump.openingMeter;
 
-  this.PMS.netSales =
-    this.PMS.totalAmount - this.PMS.totalExpenses;
+  // net litres after calibration
+  pump.netLitresSold =
+    pump.meterLitres - pump.calibrationLitres;
+
+  totalMeterLitres += pump.meterLitres;
+
+  totalCalibrationLitres += pump.calibrationLitres;
+
+  totalNetLitres += pump.netLitresSold;
+});
+
+this.PMS.totalMeterLitres = totalMeterLitres;
+
+this.PMS.totalCalibrationLitres = totalCalibrationLitres;
+
+this.PMS.totalLitres = totalNetLitres;
+
+this.PMS.totalAmount =
+  totalNetLitres * this.PMS.pricePerLitre;
 
   /* ========= AGO CALCULATIONS ========= */
+
+if (this.AGO.openingMeter != null && this.AGO.closingMeter != null) {
   this.AGO.litresSold =
-    this.AGO.closingMeter - this.AGO.openingMeter;
+    this.AGO.closingMeter - this.AGO.openingMeter - this.AGO.calibrationLitres;
 
   this.AGO.totalAmount =
     this.AGO.litresSold * this.AGO.pricePerLitre;
-
-  this.AGO.totalExpenses = this.AGO.expenses.reduce(
-    (sum, e) => sum + e.amount,
-    0
-  );
-
-  this.AGO.netSales =
-    this.AGO.totalAmount - this.AGO.totalExpenses;
-
+} else {
+  this.AGO.litresSold = 0;
+  this.AGO.totalAmount = 0;
+}
   /* ========= TOTALS ========= */
   this.totalSalesAmount =
     this.PMS.totalAmount + this.AGO.totalAmount;
