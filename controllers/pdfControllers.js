@@ -11,9 +11,10 @@ exports.generateSalesPDF = async (req, res) => {
       return res.status(404).json({ message: "Sales record not found" });
     }
 
-    const browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+   const browser = await puppeteer.launch({
+  headless: "new",
+  args: ["--no-sandbox", "--disable-setuid-sandbox"],
+});
 
     const page = await browser.newPage();
 
