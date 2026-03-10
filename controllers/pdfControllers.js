@@ -1,4 +1,6 @@
-const puppeteer = require("puppeteer-core"); // note puppeteer-core
+const puppeteer = require("puppeteer-core");
+const chromium = require("chrome-aws-lambda");
+
 const Sales = require("../models/dailySalesModel");
 const generateSalesHTML = require("../template/salesTemplate");
 
