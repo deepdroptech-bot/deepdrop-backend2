@@ -381,19 +381,19 @@ ${sales.notes.map((n) => `<li>${n}</li>`).join("")}
 <div class="signature">
 <div class="signature-line"></div>
 Created By<br/>
-${sales.createdBy?.firstName || ""} ${sales.createdBy?.lastName || ""}
+${sales.createdBy?.User.name || ""} ${sales.createdBy?.User.role || ""}
 </div>
 
 <div class="signature">
 <div class="signature-line"></div>
 Submitted By<br/>
-${sales.submittedBy?.firstName || ""} ${sales.submittedBy?.lastName || ""}
+${sales.submittedBy?.User.name|| ""} ${sales.submittedBy?.User.role || ""}
 </div>
 
 <div class="signature">
 <div class="signature-line"></div>
 Approved By<br/>
-${sales.approvedBy?.firstName || ""} ${sales.approvedBy?.lastName || ""}
+${sales.approvedBy?.User.name || ""} ${sales.approvedBy?.User.role || ""}
 </div>
 
 </div>
