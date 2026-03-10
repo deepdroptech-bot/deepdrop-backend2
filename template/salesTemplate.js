@@ -88,21 +88,38 @@ table td{
   background:#f4f4f4;
 }
 
-.footer{
-  margin-top:80px;
-  display:flex;
-  justify-content:space-between;
+.footer {
+  margin-top: 80px;
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
 }
 
-.signature{
-  width:30%;
-  text-align:center;
+.signature-block {
+  width: 30%;
+  text-align: center;
+  font-family: Arial, sans-serif;
 }
 
-.signature-line{
-  border-top:1px solid #333;
-  margin-top:40px;
-  padding-top:5px;
+.signature-line {
+  border-top: 2px solid #000;
+  margin-bottom: 8px;
+}
+
+.signature-name {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.signature-role {
+  font-size: 12px;
+  color: #555;
+}
+
+.signature-date{
+  font-size:11px;
+  margin-top:4px;
+  color:#666;
 }
 
 .notes{
@@ -378,22 +395,33 @@ ${sales.notes.map((n) => `<li>${n}</li>`).join("")}
 
 <div class="footer">
 
-<div class="signature">
-<div class="signature-line"></div>
-Created By<br/>
-${sales.createdBy?.User.name || ""} ${sales.createdBy?.User.role || ""}
+  <div class="signature-block">
+    <div class="signature-line"></div>
+    <div class="signature-name">${sales.createdBy?.name || ""}</div>
+    <div class="signature-role">Created By (${sales.createdBy?.role || ""})</div>
+    <div class="signature-date">
+  ${sales.createdAt ? new Date(sales.createdAt).toLocaleDateString() : ""}
 </div>
+  </div>
 
-<div class="signature">
-<div class="signature-line"></div>
-Submitted By<br/>
-${sales.submittedBy?.User.name|| ""} ${sales.submittedBy?.User.role || ""}
+  <div class="signature-block">
+    <div class="signature-line"></div>
+    <div class="signature-name">${sales.submittedBy?.name || ""}</div>
+    <div class="signature-role">Submitted By (${sales.submittedBy?.role || ""})</div>
+    <div class="signature-date">
+  ${sales.submittedAt ? new Date(sales.submittedAt).toLocaleDateString() : ""}
 </div>
+  </div>
 
-<div class="signature">
-<div class="signature-line"></div>
-Approved By<br/>
-${sales.approvedBy?.User.name || ""} ${sales.approvedBy?.User.role || ""}
+  <div class="signature-block">
+    <div class="signature-line"></div>
+    <div class="signature-name">${sales.approvedBy?.name || ""}</div>
+    <div class="signature-role">Approved By (${sales.approvedBy?.role || ""})</div>
+    <div class="signature-date">
+  ${sales.approvedAt ? new Date(sales.approvedAt).toLocaleDateString() : ""}
+</div>
+  </div>
+
 </div>
 
 </div>

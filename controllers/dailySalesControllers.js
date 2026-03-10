@@ -211,7 +211,9 @@ exports.getDailySalesByDate = async (req, res) => {
 exports.getSingleDailySales = async (req, res) => {
   try {
     const sales = await DailySales.findById(req.params.id)
-      .populate("createdBy", "name email role");
+      .populate("createdBy", "name email role")
+      .populate("submittedBy", "name email role")
+      .populate("approvedBy", "name email role");
 
     if (!sales) {
       return res.status(404).json({ msg: "Daily sales not found" });
