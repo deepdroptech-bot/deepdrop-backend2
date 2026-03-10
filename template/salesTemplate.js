@@ -200,7 +200,6 @@ ${sales.PMS.pumps
 <!-- ================= PMS Expenses ================= -->
 <div class="section">
 
-<div class="section-title">PMS Expenses</div>
 
 <div class="section-title">PMS Expenses</div>
 
@@ -224,6 +223,13 @@ ${sales.PMS.expenses
 `
   )
   .join("")}
+
+</tbody>
+
+</table>
+
+<table>
+<div class="section-title">PMS Summary</div>
 
 <tr>
 <td><strong>Total Litres</strong></td>
@@ -327,6 +333,9 @@ ${sales.AGO.expenses
   .join("")}
 
 </div>
+</tbody>
+
+</table>
 
 <tr>
 <td><strong>AGO Sales</strong></td>

@@ -236,7 +236,6 @@ dailySalesSchema.pre("save", function (next) {
 let totalMeterLitres = 0;
 let totalCalibrationLitres = 0;
 let totalNetLitres = 0;
-
 this.PMS.pumps.forEach(pump => {
 
   // litres from meter
@@ -263,6 +262,11 @@ this.PMS.totalLitres = totalNetLitres;
 this.PMS.totalAmount =
   totalNetLitres * this.PMS.pricePerLitre;
 
+this.PMS.totalExpenses = this.PMS.expenses.reduce(
+  (sum, e) => sum + e.amount,
+  0
+);
+
 this.PMS.pNetSales = this.PMS.totalAmount - this.PMS.totalExpenses;
 
   /* ========= AGO CALCULATIONS ========= */
@@ -273,6 +277,11 @@ if (this.AGO.openingMeter != null && this.AGO.closingMeter != null) {
 
   this.AGO.totalAmount =
     this.AGO.litresSold * this.AGO.pricePerLitre;
+
+this.AGO.totalExpenses = this.AGO.expenses.reduce(
+  (sum, e) => sum + e.amount,
+  0
+);
 
   this.AGO.ANetSales = this.AGO.totalAmount - this.AGO.totalExpenses;
 } else {
