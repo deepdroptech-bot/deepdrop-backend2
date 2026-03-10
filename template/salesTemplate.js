@@ -170,7 +170,7 @@ ${new Date(sales.salesDate).toLocaleDateString()}
 <th>Closing</th>
 <th>Meter Litres</th>
 <th>Calibration</th>
-<th>calibratioReason</th>
+<th>calibration Reason</th>
 <th>Net Litres</th>
 </tr>
 </thead>
@@ -197,7 +197,34 @@ ${sales.PMS.pumps
 
 </table>
 
+<!-- ================= PMS Expenses ================= -->
+<div class="section">
+
+<div class="section-title">PMS Expenses</div>
+
+<div class="section-title">PMS Expenses</div>
+
 <table style="margin-top:10px;width:50%">
+<thead>
+<tr>
+<th>Description</th>
+<th>Amount</th>
+</tr>
+</thead>
+
+<tbody>
+
+${sales.PMS.expenses
+  .map(
+    (e) => `
+<tr>
+<td>${e.description}</td>
+<td>${formatCurrency(e.amount)}</td>
+</tr>
+`
+  )
+  .join("")}
+
 <tr>
 <td><strong>Total Litres</strong></td>
 <td>${formatNumber(sales.PMS.totalMeterLitres)}</td>
@@ -216,6 +243,16 @@ ${sales.PMS.pumps
 <tr>
 <td><strong>PMS Sales</strong></td>
 <td>${formatCurrency(sales.PMS.totalAmount)}</td>
+</tr>
+
+<tr>
+<td><strong>PMS Expenses</strong></td>
+<td>${formatCurrency(sales.PMS.totalExpenses)}</td>
+</tr>
+
+<tr>
+<td><strong>PMS Net Sales</strong></td>
+<td>${formatCurrency(sales.PMS.pNetSales)}</td>
 </tr>
 
 </table>
@@ -262,7 +299,49 @@ ${sales.PMS.pumps
 
 </table>
 
+<!-- ================= AGO Expenses ================= -->
+
+<div class="section">
+
+<div class="section-title">AGO Expenses</div>
+
+<table style="margin-top:10px;width:50%">
+<thead>
+<tr>
+<th>Description</th>
+<th>Amount</th>
+</tr>
+</thead>
+
+<tbody>
+
+${sales.AGO.expenses
+  .map(
+    (e) => `
+<tr>
+<td>${e.description}</td>
+<td>${formatCurrency(e.amount)}</td>
+</tr>
+`
+  )
+  .join("")}
+
 </div>
+
+<tr>
+<td><strong>AGO Sales</strong></td>
+<td>${formatCurrency(sales.AGO.totalAmount)}</td>
+</tr>
+
+<tr>
+<td><strong>AGO Expenses</strong></td>
+<td>${formatCurrency(sales.AGO.totalExpenses)}</td>
+</tr>
+
+<tr>
+<td><strong>AGO Net Sales</strong></td>
+<td>${formatCurrency(sales.AGO.ANetSales)}</td>
+</tr>
 
 <!-- ================= PRODUCTS ================= -->
 

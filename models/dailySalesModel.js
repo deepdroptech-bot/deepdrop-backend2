@@ -103,7 +103,7 @@ const meterSaleSchema = new mongoose.Schema(
     default: 0
   },
 
-  netSales: Number
+  ANetSales: Number
 },
 
   { _id: false }
@@ -145,7 +145,7 @@ PMS: {
     default: 0
   },
 
-  netSales: Number
+  pNetSales: Number
 },
 
     AGO: meterSaleSchema,
@@ -263,6 +263,8 @@ this.PMS.totalLitres = totalNetLitres;
 this.PMS.totalAmount =
   totalNetLitres * this.PMS.pricePerLitre;
 
+this.PMS.pNetSales = this.PMS.totalAmount - this.PMS.totalExpenses;
+
   /* ========= AGO CALCULATIONS ========= */
 
 if (this.AGO.openingMeter != null && this.AGO.closingMeter != null) {
@@ -271,19 +273,12 @@ if (this.AGO.openingMeter != null && this.AGO.closingMeter != null) {
 
   this.AGO.totalAmount =
     this.AGO.litresSold * this.AGO.pricePerLitre;
+
+  this.AGO.ANetSales = this.AGO.totalAmount - this.AGO.totalExpenses;
 } else {
   this.AGO.litresSold = 0;
   this.AGO.totalAmount = 0;
 }
-  /* ========= TOTALS ========= */
-  this.totalSalesAmount =
-    this.PMS.totalAmount + this.AGO.totalAmount;
-
-  this.totalExpenses =
-    this.PMS.totalExpenses + this.AGO.totalExpenses;
-
-  this.netSales =
-    this.PMS.netSales + this.AGO.netSales;
 
   /* ========= OTHER INCOME ========= */
   this.totalOtherIncome = this.otherIncome.reduce(
@@ -304,7 +299,16 @@ if (Array.isArray(this.productsSold)) {
 }
 
 this.totalProductsSales = productsTotal;
+  /* ========= TOTALS ========= */
+  this.totalSalesAmount =
+    this.PMS.totalAmount + this.AGO.totalAmount + this.totalOtherIncome + this.totalProductsSales;
 
+  this.totalExpenses =
+    this.PMS.totalExpenses + this.AGO.totalExpenses;
+
+  this.netSales =
+    this.totalSalesAmount - this.totalExpenses;
+    
   next();
 });
 
