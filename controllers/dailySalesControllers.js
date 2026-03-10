@@ -11,7 +11,7 @@ exports.createDailySales = async (req, res) => {
       approvalStatus: "draft"
     });
 
-    const existingSales = await Sales.findOne({ salesDate: req.body.salesDate });
+    const existingSales = await DailySales.findOne({ salesDate: req.body.salesDate });
 
 if (existingSales) {
   return res.status(400).json({
