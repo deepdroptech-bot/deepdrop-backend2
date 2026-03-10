@@ -17,10 +17,8 @@ exports.createDailySales = async (req, res) => {
       sales
     });
   } catch (error) {
-    res.status(500).json({
-      msg: "Failed to create daily sales",
-      error: error.message
-    });
+    console.error("Daily sales error:", error);
+    res.status(500).json({ message: "Failed to fetch sales", error: error.message });
   }
 };
 
