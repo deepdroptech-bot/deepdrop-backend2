@@ -117,6 +117,11 @@ table td{
 
 <body>
 
+<div style="text-align:center;margin-bottom:30px">
+<h1>Deep Drop Energy</h1>
+<h2>Ekiosa</h2>
+</div>
+
 <div class="header">
 
 <div>
@@ -148,6 +153,7 @@ ${new Date(sales.salesDate).toLocaleDateString()}
 <th>Closing</th>
 <th>Meter Litres</th>
 <th>Calibration</th>
+<th>calibratioReason</th>
 <th>Net Litres</th>
 </tr>
 </thead>
@@ -163,6 +169,7 @@ ${sales.PMS.pumps
 <td>${formatNumber(pump.closingMeter)}</td>
 <td>${formatNumber(pump.meterLitres)}</td>
 <td>${formatNumber(pump.calibrationLitres)}</td>
+<td>${pump.calibrationReason || ""}</td>
 <td>${formatNumber(pump.netLitresSold)}</td>
 </tr>
 `
@@ -175,12 +182,12 @@ ${sales.PMS.pumps
 
 <table style="margin-top:10px;width:50%">
 <tr>
-<td><strong>Total Meter Litres</strong></td>
+<td><strong>Total Litres</strong></td>
 <td>${formatNumber(sales.PMS.totalMeterLitres)}</td>
 </tr>
 
 <tr>
-<td><strong>Total Calibration</strong></td>
+<td><strong>Total Calibrations</strong></td>
 <td>${formatNumber(sales.PMS.totalCalibrationLitres)}</td>
 </tr>
 
