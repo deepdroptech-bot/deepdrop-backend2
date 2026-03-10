@@ -13,13 +13,14 @@ exports.generateSalesPDF = async (req, res) => {
       return res.status(404).json({ message: "Sales record not found" });
     }
 
-    const browser = await puppeteer.launch({
+     const browser = await puppeteer.launch({
       args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
+      executablePath:
+        process.env.NODE_ENV === "production"
+          ? await chromium.executablePath
+          : "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      headless: true,
     });
-
     const page = await browser.newPage();
     const html = generateSalesHTML(sales);
     await page.setContent(html, { waitUntil: "networkidle0" });
