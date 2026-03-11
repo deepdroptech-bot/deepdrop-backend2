@@ -98,3 +98,5 @@ return `<!DOCTYPE html>
 </body>
 </html>`;
 }
+
+module.exports = generateStaffHtml;

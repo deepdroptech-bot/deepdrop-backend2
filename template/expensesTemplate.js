@@ -39,3 +39,5 @@ const generateExpenseHTML = (expenses) => {
     </table>
     </div>`;
 }
+
+module.exports = generateExpenseHTML;

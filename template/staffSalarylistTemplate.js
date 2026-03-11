@@ -75,3 +75,5 @@ const staffSalarylistTemplate = (staffList) => {
 </body>
 </html>`;
 }
+
+module.exports = staffSalarylistTemplate;
