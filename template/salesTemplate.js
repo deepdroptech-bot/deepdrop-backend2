@@ -247,6 +247,11 @@ ${sales.PMS.expenses
 </tr>
 
 <tr>
+<td><strong>Price / Litre</strong></td>
+<td>${formatCurrency(sales.PMS.pricePerLitre)}</td>
+</tr>
+
+<tr>
 <td><strong>PMS Sales</strong></td>
 <td>${formatCurrency(sales.PMS.totalAmount)}</td>
 </tr>
@@ -337,6 +342,10 @@ ${sales.AGO.expenses
 
 </table>
 
+<div class="section-title">AGO Summary</div>
+
+<table>
+
 <tr>
 <td><strong>AGO Sales</strong></td>
 <td>${formatCurrency(sales.AGO.totalAmount)}</td>
@@ -351,6 +360,10 @@ ${sales.AGO.expenses
 <td><strong>AGO Net Sales</strong></td>
 <td>${formatCurrency(sales.AGO.ANetSales)}</td>
 </tr>
+
+</table>
+
+</div>
 
 <!-- ================= PRODUCTS ================= -->
 
