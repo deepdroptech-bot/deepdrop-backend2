@@ -7,7 +7,8 @@ const allowRoles = require("../middleware/rolemiddleware");
 const {
   initializeBank,
   addBankBalance,
-  getBankBalance
+  getBankBalance,
+  getBankHistory
 } = require("../controllers/bankControllers");
 
 router.post("/initialize",
@@ -19,11 +20,14 @@ router.post("/initialize",
 router.post(
   "/add",
   auth,
-  allowRoles("admin"),
+  allowRoles("admin", "accountant"),
   addBankBalance
 );
 
 router.get("/", auth, getBankBalance);
 
+router.get("/history", auth, allowRoles("admin", "accountant"), 
+            getBankHistory
+          );
 
 module.exports = router;

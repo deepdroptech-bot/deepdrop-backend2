@@ -35,34 +35,88 @@ exports.initializeBank = async (req, res) => {
 };
 
 //add to bank balance
-exports.addBankBalance = async (req, res) => {
-  try {
-    const bank = await BankBalance.findOne();
-    const { type, amount } = req.body;
+exports.addBankBalance = async (req,res)=>{
 
-    //add validation
-    const validTypes = ["PMS", "AGO", "products", "otherIncome"];
-    if (!validTypes.includes(type)) {
-      return res.status(400).json({ msg: "Invalid balance type" });
-    }
+try{
 
-    //ensure amount is positive number
-    const amt = Number(amount);
-    if (isNaN(amt) || amt <= 0) {
-      return res.status(400).json({ msg: "Invalid amount" });
-    }
+const bank = await BankBalance.findOne();
 
-    //
+const {type,amount,narration} = req.body;
 
-    bank[type] += amt;
-    bank.lastUpdatedBy = req.user.id;
+const validTypes = [
+"PMS",
+"AGO",
+"products",
+"otherIncome"
+];
 
-    await bank.save();
+if(!validTypes.includes(type)){
 
-    res.json({ msg: "Bank balance updated", bank });
-  } catch (error) {
-    res.status(500).json({ msg: "Failed to update bank balance" });
-  }
+return res.status(400).json({
+msg:"Invalid balance type"
+});
+
+}
+
+const amt = Number(amount);
+
+if(isNaN(amt) || amt <=0){
+
+return res.status(400).json({
+msg:"Invalid amount"
+});
+
+}
+
+if(!narration){
+
+return res.status(400).json({
+msg:"Narration required"
+});
+
+}
+
+// update balance
+bank[type] += amt;
+
+// add history record
+bank.history.push({
+
+type,
+
+amount:amt,
+
+narration,
+
+addedBy:req.user.id,
+
+addedAt:new Date()
+
+});
+
+bank.lastUpdatedBy = req.user.id;
+
+await bank.save();
+
+res.json({
+
+msg:"Bank balance updated",
+
+bank
+
+});
+
+}catch(error){
+
+console.error(error);
+
+res.status(500).json({
+
+msg:"Failed to update bank balance"
+
+});
+
+}
 };
 
 //get bank balance
@@ -106,4 +160,46 @@ exports.getOtherIncomeBalance = async (req, res) => {
     catch (error) {
     res.status(500).json({ msg: "Failed to get other income balance" });
   }
+};
+
+//get bank transaction history
+exports.getBankHistory = async (req,res)=>{
+
+try{
+
+const bank = await BankBalance.findOne()
+
+.populate({
+path:"history.addedBy",
+select:"name"
+});
+
+if(!bank){
+
+return res.status(404).json({
+msg:"Bank record not found"
+});
+
+}
+
+res.json({
+
+PMS:bank.PMS,
+AGO:bank.AGO,
+products:bank.products,
+otherIncome:bank.otherIncome,
+
+history:bank.history.sort(
+(a,b)=> b.addedAt - a.addedAt
+)
+
+});
+
+}catch(error){
+
+res.status(500).json({
+msg:"Failed to fetch history"
+});
+
+}
 };

@@ -128,8 +128,8 @@ exports.approveDailySales = async (req, res) => {
     //
 
     /* ===== BANK UPDATE ===== */
-    bank.PMS += sales.PMS.netSales;
-    bank.AGO += sales.AGO.netSales;
+    bank.PMS += sales.PMS.pNetSales;
+    bank.AGO += sales.AGO.ANetSales;
     bank.otherIncome += sales.totalOtherIncome;
     bank.products += sales.totalProductsSales;
 

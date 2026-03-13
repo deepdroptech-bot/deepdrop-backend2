@@ -38,19 +38,19 @@ exports.getDailyProfitReport = async (req, res) => {
         price: report.PMS.pricePerLitre,
         revenue: report.PMS.totalAmount,
         expenses: report.PMS.totalExpenses,
-        netProfit: report.PMS.netSales
+        netProfit: report.PMS.pNetSales
       },
       AGO: {
         litres: report.AGO.litresSold,
         price: report.AGO.pricePerLitre,
         revenue: report.AGO.totalAmount,
         expenses: report.AGO.totalExpenses,
-        netProfit: report.AGO.netSales
+        netProfit: report.AGO.ANetSales
       },
       otherIncome: report.totalOtherIncome,
       totalNetProfit:
-        report.PMS.netSales +
-        report.AGO.netSales +
+        report.PMS.pNetSales +
+        report.AGO.ANetSales +
         report.totalOtherIncome
     });
 
@@ -67,64 +67,119 @@ exports.getProfitSummary = async (req, res) => {
     const { from, to } = req.query;
 
     const summary = await DailySales.aggregate([
+
       {
         $match: {
-          salesDate: {
+          salesDate:{
             $gte: new Date(from),
             $lte: new Date(to)
           },
-          approvalStatus: "approved",
-          isDeleted: false
+          approvalStatus:"approved",
+          isDeleted:false
         }
       },
+
+      // expand pumps array
       {
-        $group: {
-          _id: null,
+        $unwind:"$PMS.pumps"
+      },
 
-          totalPMSLitres: { $sum: "$PMS.totalLitres" },
-          totalPMSRevenue: { $sum: "$PMS.totalAmount" },
-          totalPMSExpenses: { $sum: "$PMS.totalExpenses" },
-          totalPMSNet: { $sum: "$PMS.netSales" },
+      // group pump categories
+      {
+        $group:{
+          _id:null,
 
-          totalAGOLitres: { $sum: "$AGO.litresSold" },
-          totalAGORevenue: { $sum: "$AGO.totalAmount" },
-          totalAGOExpenses: { $sum: "$AGO.totalExpenses" }, 
-          totalAGONet: { $sum: "$AGO.netSales" },
+          pump12Litres:{
+            $sum:{
+              $cond:[
+                {$in:["$PMS.pumps.pumpNumber",[1,2]]},
+                "$PMS.pumps.netLitresSold",
+                0
+              ]
+            }
+          },
 
-          totalOtherIncome: { $sum: "$totalOtherIncome" }
+          pump34Litres:{
+            $sum:{
+              $cond:[
+                {$in:["$PMS.pumps.pumpNumber",[3,4]]},
+                "$PMS.pumps.netLitresSold",
+                0
+              ]
+            }
+          },
+
+          totalPMSLitres:{
+            $sum:"$PMS.pumps.netLitresSold"
+          },
+
+          totalPMSRevenue:{ $sum:"$PMS.totalAmount" },
+          totalPMSExpenses:{ $sum:"$PMS.totalExpenses" },
+          totalPMSNet:{ $sum:"$PMS.pNetSales" },
+
+          totalAGOLitres:{ $sum:"$AGO.litresSold" },
+          totalAGORevenue:{ $sum:"$AGO.totalAmount" },
+          totalAGOExpenses:{ $sum:"$AGO.totalExpenses" },
+          totalAGONet:{ $sum:"$AGO.ANetSales" },
+
+          totalProductSold:{ $sum:"$totalProductsSales" },
+
+          totalOtherIncome:{ $sum:"$totalOtherIncome" }
+
         }
       }
+
     ]);
 
-    if (!summary.length) {
-      return res.json({ msg: "No data for selected period" });
+    if(!summary.length){
+      return res.json({msg:"No data"});
     }
 
     const data = summary[0];
 
     res.json({
-      period: { from, to },
-      PMS: {
-        litres: data.totalPMSLitres,
-        revenue: data.totalPMSRevenue,
-        expenses: data.totalPMSExpenses,
-        netProfit: data.totalPMSNet
+
+      period:{from,to},
+
+      PMS:{
+        pump12Litres:data.pump12Litres,
+        pump34Litres:data.pump34Litres,
+        totalLitres:data.totalPMSLitres,
+        revenue:data.totalPMSRevenue,
+        expenses:data.totalPMSExpenses,
+        netProfit:data.totalPMSNet
       },
-      AGO: {
-        litres: data.totalAGOLitres,
-        revenue: data.totalAGORevenue,
-        expenses: data.totalAGOExpenses,
-        netProfit: data.totalAGONet
+
+      AGO:{
+        litres:data.totalAGOLitres,
+        revenue:data.totalAGORevenue,
+        expenses:data.totalAGOExpenses,
+        netProfit:data.totalAGONet
       },
-      otherIncome: data.totalOtherIncome,
+
+      products:{
+        revenue:data.totalProductSold
+      },
+
+      otherIncome:data.totalOtherIncome,
+
       grandTotalProfit:
+
         data.totalPMSNet +
         data.totalAGONet +
+        data.totalProductSold +
         data.totalOtherIncome
+
     });
 
-  } catch (error) {
-    res.status(500).json({ msg: "Failed to generate profit summary" });
+  } catch(error){
+
+    console.error(error);
+
+    res.status(500).json({
+      msg:"Failed to generate profit summary"
+    });
+
   }
 };
 
@@ -172,3 +227,93 @@ exports.getAuditTrail = async (req, res) => {
     });
   }
 };
+
+exports.getPumpCalibrationAudit = async (req,res)=>{
+
+try{
+
+const {from,to} = req.query;
+
+const audit = await DailySales.aggregate([
+
+{
+$match:{
+salesDate:{
+$gte:new Date(from),
+$lte:new Date(to)
+}
+}
+},
+
+{
+$unwind:"$PMS.pumps"
+},
+
+{
+$match:{
+"PMS.pumps.calibrationLitres":{
+$gt:0
+}
+}
+},
+
+{
+$project:{
+
+salesDate:1,
+
+pumpNumber:"$PMS.pumps.pumpNumber",
+
+calibrationLitres:
+"$PMS.pumps.calibrationLitres",
+
+calibrationReason:
+"$PMS.pumps.calibrationReason",
+
+calibratedBy:
+"$PMS.pumps.calibratedBy"
+
+}
+},
+
+{
+$lookup:{
+from:"users",
+localField:"calibratedBy",
+foreignField:"_id",
+as:"staff"
+}
+},
+
+{
+$unwind:{
+path:"$staff",
+preserveNullAndEmptyArrays:true
+}
+},
+
+{
+$project:{
+salesDate:1,
+pumpNumber:1,
+calibrationLitres:1,
+calibrationReason:1,
+staffName:"$staff.name"
+}
+}
+
+]);
+
+res.json(audit);
+
+}catch(error){
+
+console.error(error);
+
+res.status(500).json({
+msg:"Failed audit fetch"
+});
+
+}
+};
+

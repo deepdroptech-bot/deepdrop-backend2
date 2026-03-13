@@ -7,7 +7,8 @@ const allowRoles = require("../middleware/rolemiddleware");
 const {
     getDailyProfitReport,
     getProfitSummary,
-    getAuditTrail
+    getAuditTrail,
+    getPumpCalibrationAudit
 } = require("../controllers/profit&AuditControllers");
 
 router.get("/daily-profit-report/:date",
@@ -26,6 +27,12 @@ router.get("/audit-trail/:date",
     auth,
     allowRoles("admin"),
     getAuditTrail
+);
+
+router.get("/pump-calibration-audit/",
+    auth,
+    allowRoles("admin", "accountant"),
+    getPumpCalibrationAudit
 );
 
 module.exports = router;
