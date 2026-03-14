@@ -1,5 +1,70 @@
 const mongoose = require("mongoose");
 
+const FuelInventoryHistorySchema = new mongoose.Schema({
+
+  type:{
+    type:String,
+    enum:["PMS","AGO"],
+    required:true
+  },
+
+  Quantity:{
+    type:Number,
+    default:0
+  },
+
+  wellNumber:{ 
+    type:Number,
+    default:null
+  },
+
+ addedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+  addedAt: {
+    type: Date,
+    default: Date.now
+  },
+  details: {
+    type: String,
+    default: ""
+  }
+},{_id:false});
+
+const productInventoryHistorySchema = new mongoose.Schema({
+
+  slotNumber:{
+    type:Number,
+    required:true
+  },
+
+  itemName:{
+    type:String,
+    default:""
+  },
+
+  quantity:{
+    type:Number,
+    default:0
+  },
+
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  details: {
+    type: String,
+    default: ""
+  }
+},{_id:false});
+
 /* =========================
    PRODUCT SLOT SCHEMA
 ========================= */
@@ -75,6 +140,15 @@ const inventorySchema = new mongoose.Schema(
             quantity: 0
           }))
       }
+    },
+
+    fuelHistory: {
+      type: [FuelInventoryHistorySchema],
+      default: []
+    },
+    productHistory: {
+      type: [productInventoryHistorySchema],
+      default: []
     },
 
     /* =========================

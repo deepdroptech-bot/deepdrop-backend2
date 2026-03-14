@@ -10,7 +10,9 @@ const {
   addProductQuantity,
   getInventory,
   getProductInventory,
-  getFuelInventory
+  getFuelInventory,
+  getFuelHistory,
+  getProductHistory
 } = require("../controllers/inventoryController");
 
 router.post("/initialize",
@@ -44,6 +46,16 @@ router.get("/fuel",
 router.get("/products",
   auth,
   getProductInventory
+);
+
+router.get("/fuel-history",
+  auth,
+  getFuelHistory
+);
+
+router.get("/product-history",
+  auth,
+  getProductHistory
 );
 
 module.exports = router;
