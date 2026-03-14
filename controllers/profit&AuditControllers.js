@@ -86,49 +86,74 @@ exports.getProfitSummary = async (req, res) => {
 
       // group pump categories
       {
-        $group:{
-          _id:null,
+$group:{
 
-          pump12Litres:{
-            $sum:{
-              $cond:[
-                {$in:["$PMS.pumps.pumpNumber",[1,2]]},
-                "$PMS.pumps.netLitresSold",
-                0
-              ]
-            }
-          },
+_id:"$_id",
 
-          pump34Litres:{
-            $sum:{
-              $cond:[
-                {$in:["$PMS.pumps.pumpNumber",[3,4]]},
-                "$PMS.pumps.netLitresSold",
-                0
-              ]
-            }
-          },
+pump12Litres:{
+$sum:{
+$cond:[
+{$in:["$PMS.pumps.pumpNumber",[1,2]]},
+"$PMS.pumps.netLitresSold",
+0
+]
+}
+},
 
-          totalPMSLitres:{
-            $sum:"$PMS.pumps.netLitresSold"
-          },
+pump34Litres:{
+$sum:{
+$cond:[
+{$in:["$PMS.pumps.pumpNumber",[3,4]]},
+"$PMS.pumps.netLitresSold",
+0
+]
+}
+},
 
-          totalPMSRevenue:{ $sum:"$PMS.totalAmount" },
-          totalPMSExpenses:{ $sum:"$PMS.totalExpenses" },
-          totalPMSNet:{ $sum:"$PMS.pNetSales" },
+totalPMSLitres:{
+$sum:"$PMS.pumps.netLitresSold"
+},
 
-          totalAGOLitres:{ $sum:"$AGO.litresSold" },
-          totalAGORevenue:{ $sum:"$AGO.totalAmount" },
-          totalAGOExpenses:{ $sum:"$AGO.totalExpenses" },
-          totalAGONet:{ $sum:"$AGO.ANetSales" },
+totalPMSRevenue:{ $first:"$PMS.totalAmount" },
+totalPMSExpenses:{ $first:"$PMS.totalExpenses" },
+totalPMSNet:{ $first:"$PMS.pNetSales" },
 
-          totalProductSold:{ $sum:"$totalProductsSales" },
+totalAGOLitres:{ $first:"$AGO.litresSold" },
+totalAGORevenue:{ $first:"$AGO.totalAmount" },
+totalAGOExpenses:{ $first:"$AGO.totalExpenses" },
+totalAGONet:{ $first:"$AGO.ANetSales" },
 
-          totalOtherIncome:{ $sum:"$totalOtherIncome" }
+totalProductSold:{ $first:"$totalProductsSales" },
 
-        }
-      }
+totalOtherIncome:{ $first:"$totalOtherIncome" }
 
+}
+},
+
+{
+$group:{
+
+_id:null,
+
+pump12Litres:{ $sum:"$pump12Litres"},
+pump34Litres:{ $sum:"$pump34Litres"},
+totalPMSLitres:{ $sum:"$totalPMSLitres"},
+
+totalPMSRevenue:{ $sum:"$totalPMSRevenue"},
+totalPMSExpenses:{ $sum:"$totalPMSExpenses"},
+totalPMSNet:{ $sum:"$totalPMSNet"},
+
+totalAGOLitres:{ $sum:"$totalAGOLitres"},
+totalAGORevenue:{ $sum:"$totalAGORevenue"},
+totalAGOExpenses:{ $sum:"$totalAGOExpenses"},
+totalAGONet:{ $sum:"$totalAGONet"},
+
+totalProductSold:{ $sum:"$totalProductSold"},
+
+totalOtherIncome:{ $sum:"$totalOtherIncome"}
+
+}
+}
     ]);
 
     if(!summary.length){
