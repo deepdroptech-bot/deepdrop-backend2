@@ -255,7 +255,7 @@ msg:"Inventory not found"
 
 }
 
-let history = [];
+let history = inventory.fuelHistory;
 
 if(type === "PMS"){
 
