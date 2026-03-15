@@ -68,8 +68,8 @@ const staffSalarylistTemplate = (staffList) => {
                 </tr>
             `).join('')}
             <tr>
-                <th colspan="3">Total</th>
-                <th>${formatCurrency(staffList.reduce((sum, staff) => sum + staff.baseSalary, 0))}</th>     
+                <th colspan="6">Total Payable</th>
+                <th>${formatCurrency(staffList.reduce((sum, staff) => sum + staff.netSalary, 0))}</th>     
         </table>
     </div>
 </body>

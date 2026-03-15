@@ -255,12 +255,13 @@ msg:"Inventory not found"
 
 }
 
-let history = inventory.fuelHistory;
-
-if(type === "PMS"){
+let history =
+inventory.fuelHistory || [];
 
 history =
-inventory.fuel.PMS.history;
+history.filter(
+h => h.fuelType === type.toUpperCase()
+);
 
 if(well){
 
@@ -270,20 +271,6 @@ h => h.wellNumber === Number(well)
 );
 
 }
-
-}
-
-if(type === "AGO"){
-
-history =
-inventory.fuel.AGO.history;
-
-}
-
-history.sort(
-(a,b)=> new Date(b.createdAt)
-- new Date(a.createdAt)
-);
 
 res.json(history);
 
