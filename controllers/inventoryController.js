@@ -230,7 +230,6 @@ exports.getProductInventory = async (req, res) => {
   }
 };
 
-// get fuel inventory history
 exports.getFuelHistory = async (req,res)=>{
 
 try{
@@ -245,31 +244,53 @@ msg:"Fuel type required"
 
 }
 
-let filter = {
-fuelType:type
-};
+const inventory =
+await Inventory.findOne();
 
-if(well){
+if(!inventory){
 
-filter.wellNumber =
-Number(well);
+return res.status(404).json({
+msg:"Inventory not found"
+});
 
 }
 
-const history =
-await FuelHistory
-.find(filter)
-.sort({createdAt:-1});
+let history = [];
+
+if(type === "PMS"){
+
+history =
+inventory.fuel.PMS.history;
+
+if(well){
+
+history =
+history.filter(
+h => h.wellNumber === Number(well)
+);
+
+}
+
+}
+
+if(type === "AGO"){
+
+history =
+inventory.fuel.AGO.history;
+
+}
+
+history.sort(
+(a,b)=> new Date(b.createdAt)
+- new Date(a.createdAt)
+);
 
 res.json(history);
 
 }
 catch(err){
 
-console.error(
-"Fuel history error:",
-err
-);
+console.error(err);
 
 res.status(500).json({
 msg:"Server error"
