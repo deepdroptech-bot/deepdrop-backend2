@@ -230,61 +230,38 @@ exports.getProductInventory = async (req, res) => {
   }
 };
 
-exports.getFuelHistory = async (req,res)=>{
+exports.getFuelHistory = async (req,res) => {
+  try {
+    const { type, well } = req.query;
 
-try{
+    if(!type) {
+      return res.status(400).json({ msg:"Fuel type required" });
+    }
 
-const { type, well } = req.query;
+    const inventory = await Inventory.findOne();
+    if(!inventory) {
+      return res.status(404).json({ msg:"Inventory not found" });
+    }
 
-if(!type){
+    // start with full history
+    let history = inventory.fuelHistory || [];
 
-return res.status(400).json({
-msg:"Fuel type required"
-});
+    // filter by type
+    history = history.filter(h => h.type === type.toUpperCase());
 
-}
+    // filter by well if provided
+    if (well && type.toUpperCase() === "PMS") {
+      history = history.filter(h => h.wellNumber === Number(well));
+    }
 
-const inventory =
-await Inventory.findOne();
+    // sort by newest first
+    history.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-if(!inventory){
-
-return res.status(404).json({
-msg:"Inventory not found"
-});
-
-}
-
-let history =
-inventory.fuelHistory || [];
-
-history =
-history.filter(
-h => h.fuelType === type.toUpperCase()
-);
-
-if(well){
-
-history =
-history.filter(
-h => h.wellNumber === Number(well)
-);
-
-}
-
-res.json(history);
-
-}
-catch(err){
-
-console.error(err);
-
-res.status(500).json({
-msg:"Server error"
-});
-
-}
-
+    res.json({ history }); // send as { history: [...] }
+  } catch(err) {
+    console.error("Fuel history error:", err);
+    res.status(500).json({ msg:"Server error" });
+  }
 };
 // get product inventory history
 exports.getProductHistory = async (req,res)=>{
