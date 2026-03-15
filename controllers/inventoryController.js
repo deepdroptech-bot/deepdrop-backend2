@@ -128,7 +128,7 @@ exports.addFuelStock = async (req, res) => {
 //add product quantity to inventory
 exports.addProductQuantity = async (req, res) => {
   try {
-    const { slotNumber, itemName, quantity } = req.body;
+    const { slotNumber, itemName, quantity, details } = req.body;
 
     const slotNo = Number(slotNumber);
     const qty = Number(quantity);
@@ -235,75 +235,49 @@ exports.getFuelHistory = async (req,res)=>{
 
 try{
 
-const { type, page = 1, limit = 20 } = req.query;
+const { type, well } = req.query;
 
-const inventory = await Inventory
-.findOne()
-.populate("fuelHistory.createdBy","name");
+if(!type){
 
-if(!inventory){
-
-return res.status(404).json({
-
-msg:"Inventory not found"
-
+return res.status(400).json({
+msg:"Fuel type required"
 });
 
 }
 
-// optional filter by fuel type
-let history = inventory.fuelHistory;
+let filter = {
+fuelType:type
+};
 
-if(type){
+if(well){
 
-history = history.filter(
-item => item.type === type
-);
-
-}
-
-// sort newest first
-history = history
-.sort((a,b)=>
-new Date(b.createdAt) -
-new Date(a.createdAt)
-);
-
-// pagination
-const start = (page - 1) * limit;
-const end = start + Number(limit);
-
-const paginated = history.slice(start,end);
-
-res.json({
-
-total:history.length,
-
-page:Number(page),
-
-pages:Math.ceil(
-history.length / limit
-),
-
-history:paginated
-
-});
+filter.wellNumber =
+Number(well);
 
 }
-catch(error){
+
+const history =
+await FuelHistory
+.find(filter)
+.sort({createdAt:-1});
+
+res.json(history);
+
+}
+catch(err){
+
+console.error(
+"Fuel history error:",
+err
+);
 
 res.status(500).json({
-
-msg:"Failed to fetch fuel history",
-
-error:error.message
-
+msg:"Server error"
 });
 
 }
 
 };
-
 // get product inventory history
 exports.getProductHistory = async (req,res)=>{
 
