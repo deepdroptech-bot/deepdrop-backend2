@@ -15,7 +15,8 @@ const {
   paySalary,
   deleteStaff,
   deactivateStaff,
-  activateStaff
+  activateStaff,
+  getStaffHistory
 } = require("../controllers/staffControllers");
 
 router.post(
@@ -90,6 +91,13 @@ router.patch(
   auth,
   allowRoles("admin"),
   activateStaff
+);
+
+router.get(
+  "/:id/history",
+  auth,
+  allowRoles("admin", "manager"),
+  getStaffHistory
 );
 
 module.exports = router;

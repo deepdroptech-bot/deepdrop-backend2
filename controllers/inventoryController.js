@@ -257,7 +257,7 @@ exports.getFuelHistory = async (req,res) => {
     // sort by newest first
     history.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    res.json({ history }); // send as { history: [...] }
+    res.json({ history });
   } catch(err) {
     console.error("Fuel history error:", err);
     res.status(500).json({ msg:"Server error" });

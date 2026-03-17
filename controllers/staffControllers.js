@@ -1,6 +1,9 @@
 const Staff = require('../models/staffModel');
 const bankBalanceModel = require('../models/bankModel');
 const cloudinary = require("../config/cloudinary");
+const { logStaffHistory } = require("../utils/staffHistoryLogger");
+const StaffHistory = require("../models/staffHistoryModel");
+
 
 // create new staff
 exports.createStaff = async (req, res) => {
@@ -48,6 +51,18 @@ console.log("Incoming body:", req.body);
       };
     }
 
+    await logStaffHistory({
+
+staffId:staff._id,
+
+action:"CREATED",
+
+userId:req.user.id,
+
+details:"Staff account created"
+
+});
+
     const staff = await Staff.create({
       staffId,
       firstName,
@@ -83,6 +98,24 @@ exports.addBonus = async (req, res) => {
     appliedBy: req.user.id
   });
 
+  await logStaffHistory({
+
+staffId:staff._id,
+
+action:"BONUS_ADDED",
+
+userId:req.user.id,
+
+amount:bonus.amount,
+
+previousSalary:oldSalary,
+
+newSalary:staff.netSalary,
+
+details:"Bonus added"
+
+});
+
   await staff.save();
 
   res.json({
@@ -102,6 +135,22 @@ exports.addDeduction = async (req, res) => {
     reason,
     appliedBy: req.user.id
   });
+
+  await logStaffHistory({
+
+staffId:staff._id,
+
+action:"DEDUCTION_ADDED",
+
+userId:req.user.id,
+
+amount:deduction.amount,
+
+previousSalary:oldSalary,
+
+newSalary:staff.netSalary
+
+});
 
   await staff.save();
 
@@ -150,6 +199,20 @@ exports.paySalary = async (req, res) => {
     staff.bonuses = [];
     staff.deductions = [];
     staff.lastPaidDate = new Date();
+
+    await logStaffHistory({
+
+staffId:staff._id,
+
+action:"SALARY_PAID",
+
+userId:req.user.id,
+
+amount:staff.netSalary,
+
+details:"Salary payment"
+
+});
 
     // DO NOT manually set netSalary
     await staff.save({ session });
@@ -235,6 +298,27 @@ exports.updateStaff = async (req, res) => {
     staff.updatedBy = req.user.id;
     staff.lastUpdatedAt = Date.now();
 
+    await logStaffHistory({
+
+staffId:staff._id,
+
+action:"STATUS_CHANGED",
+
+userId:req.user.id,
+
+changes:{
+
+oldStatus:oldStatus,
+
+newStatus:newStatus
+
+},
+
+details:"Employment status updated"
+
+});
+    
+
     await staff.save();
 
     res.json({ msg: "Staff updated successfully", staff });
@@ -272,6 +356,8 @@ exports.deactivateStaff = async (req, res) => {
     staff.deactivatedBy = req.user.id;
     staff.deactivatedAt = Date.now();
 
+
+
     await staff.save();
     res.json({ msg: "Staff deactivated successfully", staff });
   } catch (error) {
@@ -293,4 +379,31 @@ exports.activateStaff = async (req, res) => {
   } catch (error) {
     res.status(500).json({ msg: "Failed to activate staff" });
   }
+};
+
+// get staff history
+exports.getStaffHistory = async(req,res)=>{
+
+try{
+
+const { id } = req.params;
+
+const history =
+await StaffHistory
+.find({staff:id})
+.populate("performedBy","name role")
+.populate("staff","firstName lastName staffId position")
+.sort({createdAt:-1});
+
+res.json(history);
+
+}
+catch(err){
+
+res.status(500).json({
+msg:"Failed to get history"
+});
+
+}
+
 };
