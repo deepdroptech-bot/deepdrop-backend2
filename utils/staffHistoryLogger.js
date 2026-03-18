@@ -3,6 +3,7 @@ require("../models/staffHistoryModel");
 
 exports.logStaffHistory =
 async({
+
 staffId,
 action,
 userId,
@@ -10,11 +11,12 @@ details="",
 amount=null,
 previousSalary=null,
 newSalary=null,
-changes={}
+changes={},
+session=null
 
 })=>{
 
-await StaffHistory.create({
+await StaffHistory.create([{
 
 staff:staffId,
 
@@ -32,6 +34,6 @@ changes,
 
 performedBy:userId
 
-});
+}],{session});
 
 };
