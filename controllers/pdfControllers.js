@@ -1,6 +1,9 @@
 const puppeteer = require("puppeteer-core");
 const chromium = require("@sparticuz/chromium");
 
+const {generatePDF} =
+require("../utils/pdfGenerator");
+
 const Sales = require("../models/dailySalesModel");
 const Staff = require("../models/staffModel");
 const expense = require ("../models/expenseModel");
@@ -9,6 +12,8 @@ const generateStaffHTML = require("../template/staffTemplate");
 const generateSalesHTML = require("../template/salesTemplate");
 const generateStaffSalaryHTML = require("../template/staffSalarylistTemplate");
 const generateExpenseHTML = require("../template/expensesTemplate");
+const generateCalibrationHTML = require("../template/calibrationTemplate");
+const generateProfitHTML = require("../template/profitSummaryTemplate");
 
 exports.generateSalesPDF = async (req, res) => {
   try {
@@ -137,4 +142,205 @@ exports.generateExpensePDF = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Failed to generate PDF" });
   }
+};
+
+exports.generateCalibrationPDF = async(req,res)=>{
+
+try{
+
+const {from,to} =
+req.query;
+
+const audit = await DailySales.aggregate([
+
+{
+$match:{
+salesDate:{
+$gte:new Date(from),
+$lte:new Date(to)
+}
+}
+},
+
+{
+$unwind:"$PMS.pumps"
+},
+
+{
+$match:{
+"PMS.pumps.calibrationLitres":{
+$gt:0
+}
+}
+},
+
+{
+$project:{
+salesDate:1,
+pumpNumber:"$PMS.pumps.pumpNumber",
+calibrationLitres:"$PMS.pumps.calibrationLitres",
+calibrationReason:"$PMS.pumps.calibrationReason",
+calibratedBy:"$PMS.pumps.calibratedBy"
+}
+},
+
+{
+$lookup:{
+from:"users",
+localField:"calibratedBy",
+foreignField:"_id",
+as:"staff"
+}
+},
+
+{
+$unwind:{
+path:"$staff",
+preserveNullAndEmptyArrays:true
+}
+},
+
+{
+$project:{
+salesDate:1,
+pumpNumber:1,
+calibrationLitres:1,
+calibrationReason:1,
+staffName:"$staff.name"
+}
+}
+
+]);
+
+if(!audit.length){
+
+return res.status(404).json({
+
+msg:"No calibration records"
+
+});
+
+}
+
+const html =
+generateCalibrationHTML(audit);
+
+const pdf =
+await generatePDF(html);
+
+res.set({
+
+"Content-Type":
+"application/pdf",
+
+"Content-Disposition":
+`attachment; filename=calibration-report.pdf`
+
+});
+
+res.send(pdf);
+
+}
+catch(error){
+
+console.error(error);
+
+res.status(500).json({
+
+msg:"PDF generation failed"
+
+});
+
+}
+
+};
+
+exports.generateProfitSummaryPDF = async (req,res)=>{
+
+try{
+
+const { from,to } =
+req.query;
+
+const summary =
+await DailySales.aggregate([
+
+/* YOUR EXISTING PIPELINE */
+
+]);
+
+if(!summary.length){
+
+return res.status(404).json({
+msg:"No data"
+});
+
+}
+
+const data = summary[0];
+
+const reportData = {
+
+period:{from,to},
+
+PMS:{
+pump12Litres:data.pump12Litres,
+pump34Litres:data.pump34Litres,
+totalLitres:data.totalPMSLitres,
+revenue:data.totalPMSRevenue,
+expenses:data.totalPMSExpenses,
+net:data.totalPMSNet
+},
+
+AGO:{
+litres:data.totalAGOLitres,
+revenue:data.totalAGORevenue,
+expenses:data.totalAGOExpenses,
+net:data.totalAGONet
+},
+
+products:data.totalProductSold,
+
+otherIncome:data.totalOtherIncome,
+
+grand:
+
+data.totalPMSNet +
+data.totalAGONet +
+data.totalProductSold +
+data.totalOtherIncome
+
+};
+
+const html =
+generateProfitHTML(reportData);
+
+const pdf =
+await generatePDF(html);
+
+res.set({
+
+"Content-Type":
+"application/pdf",
+
+"Content-Disposition":
+`attachment; filename=profit-summary-report.pdf`
+
+});
+
+res.send(pdf);
+
+}
+catch(error){
+
+console.error(error);
+
+res.status(500).json({
+
+msg:"PDF generation failed"
+
+});
+
+}
+
 };
