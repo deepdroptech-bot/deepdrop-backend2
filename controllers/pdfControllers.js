@@ -151,7 +151,7 @@ try{
 const {from,to} =
 req.query;
 
-const audit = await DailySales.aggregate([
+const audit = await Sales.aggregate([
 
 {
 $match:{
@@ -263,10 +263,93 @@ const { from,to } =
 req.query;
 
 const summary =
-await DailySales.aggregate([
+await Sales.aggregate([
+{
+        $match: {
+          salesDate:{
+            $gte: new Date(from),
+            $lte: new Date(to)
+          },
+          approvalStatus:"approved",
+          isDeleted:false
+        }
+      },
 
-/* YOUR EXISTING PIPELINE */
+      // expand pumps array
+      {
+        $unwind:"$PMS.pumps"
+      },
 
+      // group pump categories
+      {
+$group:{
+
+_id:"$_id",
+
+pump12Litres:{
+$sum:{
+$cond:[
+{$in:["$PMS.pumps.pumpNumber",[1,2]]},
+"$PMS.pumps.netLitresSold",
+0
+]
+}
+},
+
+pump34Litres:{
+$sum:{
+$cond:[
+{$in:["$PMS.pumps.pumpNumber",[3,4]]},
+"$PMS.pumps.netLitresSold",
+0
+]
+}
+},
+
+totalPMSLitres:{
+$sum:"$PMS.pumps.netLitresSold"
+},
+
+totalPMSRevenue:{ $first:"$PMS.totalAmount" },
+totalPMSExpenses:{ $first:"$PMS.totalExpenses" },
+totalPMSNet:{ $first:"$PMS.pNetSales" },
+
+totalAGOLitres:{ $first:"$AGO.litresSold" },
+totalAGORevenue:{ $first:"$AGO.totalAmount" },
+totalAGOExpenses:{ $first:"$AGO.totalExpenses" },
+totalAGONet:{ $first:"$AGO.ANetSales" },
+
+totalProductSold:{ $first:"$totalProductsSales" },
+
+totalOtherIncome:{ $first:"$totalOtherIncome" }
+
+}
+},
+
+{
+$group:{
+
+_id:null,
+
+pump12Litres:{ $sum:"$pump12Litres"},
+pump34Litres:{ $sum:"$pump34Litres"},
+totalPMSLitres:{ $sum:"$totalPMSLitres"},
+
+totalPMSRevenue:{ $sum:"$totalPMSRevenue"},
+totalPMSExpenses:{ $sum:"$totalPMSExpenses"},
+totalPMSNet:{ $sum:"$totalPMSNet"},
+
+totalAGOLitres:{ $sum:"$totalAGOLitres"},
+totalAGORevenue:{ $sum:"$totalAGORevenue"},
+totalAGOExpenses:{ $sum:"$totalAGOExpenses"},
+totalAGONet:{ $sum:"$totalAGONet"},
+
+totalProductSold:{ $sum:"$totalProductSold"},
+
+totalOtherIncome:{ $sum:"$totalOtherIncome"}
+
+}
+}
 ]);
 
 if(!summary.length){
