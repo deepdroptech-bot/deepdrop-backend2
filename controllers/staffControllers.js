@@ -21,13 +21,15 @@ exports.createStaff = async (req, res) => {
 
     if (!staffId || !firstName || !lastName || !phone || !nin || !position) {
       return res.status(400).json({
+        success:false,
         msg: "Required fields missing"
       });
     }
 
     if (!baseSalary || isNaN(baseSalary)) {
       return res.status(400).json({
-        message:"Valid salary required"
+        success:false,
+        msg:"Valid salary required"
       });
     }
 
@@ -37,6 +39,7 @@ exports.createStaff = async (req, res) => {
     if (existingStaff) {
 
       return res.status(400).json({
+        success:false,
         msg:"Staff already exists"
       });
 
@@ -109,6 +112,7 @@ details:"Staff profile created"
 });
 
     res.status(201).json({
+success:true,
 
       msg:"Staff created successfully",
 
@@ -122,6 +126,7 @@ details:"Staff profile created"
     console.error(error);
 
     res.status(500).json({
+      success:false,
       msg:"Failed to create staff"
     });
 
