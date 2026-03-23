@@ -16,24 +16,24 @@ exports.createUser = async (req, res) => {
 
     // 1. Check required fields
     if (!name || !email || !password || !confirmPassword || !role) {
-      return res.status(400).json({ msg: "All fields are required" });
+      return res.status(400).json({success: false, msg: "All fields are required" });
     }
 
     // 2. Reconfirm password
     if (password !== confirmPassword) {
-      return res.status(400).json({ msg: "Passwords do not match" });
+      return res.status(400).json({success: false, msg: "Passwords do not match" });
     }
 
     // 3. Validate role
     const allowedRoles = ["admin", "manager", "accountant"];
     if (!allowedRoles.includes(role)) {
-      return res.status(400).json({ msg: "Invalid role" });
+      return res.status(400).json({success: false, msg: "Invalid role" });
     }
 
     // 4. Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ msg: "User already exists" });
+      return res.status(400).json({success: false, msg: "User already exists" });
     }
 
     // 5. Create user (password hashed automatically)
@@ -45,11 +45,12 @@ exports.createUser = async (req, res) => {
     });
 
     res.status(201).json({
+      success: true,
       msg: "User created successfully",
       user
     });
   } catch (error) {
-    res.status(500).json({ msg: "Failed to create user" });
+    res.status(500).json({ success: false, msg: "Failed to create user" });
   }
 };
 
@@ -61,25 +62,26 @@ exports.loginUser = async (req, res) => {
     // 1. Find user
     const user = await User.findOne({ email });
     if (!user || !user.isActive) {
-      return res.status(401).json({ msg: "User not found or inactive" });
+      return res.status(401).json({ success: false, msg: "User not found or inactive" });
     }
 
     // 2. Compare password
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
-      return res.status(401).json({ msg: "password is incorrect" });
+      return res.status(401).json({ success: false, msg: "password is incorrect" });
     }
 
     // 3. Generate token
     const token = generateToken(user);
 
     res.json({
+      success: true,
       msg: "Login successful",
       user,
       token
     });
   } catch (error) {
-    res.status(500).json({ msg: "Login failed" });
+    res.status(500).json({ success: false, msg: "Login failed" });
   }
 };
 
@@ -162,7 +164,7 @@ exports.updateCurrentUser = async (req, res) => {
     const { name, email, password, confirmPassword } = req.body;
     const user = await User.findById(req.user.id);
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({success: false, msg: "User not found" });
     }
     // Update fields
     if (name) user.name = name;
@@ -170,17 +172,17 @@ exports.updateCurrentUser = async (req, res) => {
     // If password is being changed
     if (password) {
       if (!confirmPassword) {
-        return res.status(400).json({ msg: "Confirm password required" });
+        return res.status(400).json({ success: false, msg: "Confirm password required" });
       }
         if (password !== confirmPassword) { 
-        return res.status(400).json({ msg: "Passwords do not match" });
+        return res.status(400).json({ success: false, msg: "Passwords do not match" });
     } 
         user.password = password; // hashed by pre-save hook
     }
     await user.save();
-    res.json({ msg: "Profile updated successfully", user });
+    res.json({ success: true, msg: "Profile updated successfully", user });
   } catch (error) {
-    res.status(500).json({ msg: "Failed to update profile" });
+    res.status(500).json({ success: false, msg: "Failed to update profile" });
   }
 };
 
@@ -190,14 +192,14 @@ exports.deleteUser = async (req, res) => {
     const user = await User.findById(req.params.id);
 
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return res.status(404).json({ success: false, msg: "User not found" });
     }
 
     await user.deleteOne();
 
-    res.json({ msg: "User deleted successfully" });
+    res.json({ success: true, msg: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ msg: "Failed to delete user" });
+    res.status(500).json({ success: false, msg: "Failed to delete user" });
   }
 };
 
@@ -206,9 +208,9 @@ exports.deleteUser = async (req, res) => {
 exports.logoutUser = async (req, res) => {
   try {
     // For JWT, logout is handled on client side by deleting the token
-    res.json({ msg: "Logout successful" });
+    res.json({ success: true, msg: "Logout successful" });
   } catch (error) {
-    res.status(500).json({ msg: "Logout failed" });
+    res.status(500).json({ success: false, msg: "Logout failed" });
   }
 };
 

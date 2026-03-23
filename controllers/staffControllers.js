@@ -29,7 +29,7 @@ exports.createStaff = async (req, res) => {
     if (!baseSalary || isNaN(baseSalary)) {
       return res.status(400).json({
         success:false,
-        msg:"Valid salary required"
+        msg:"Valid salary required (must be a number)"
       });
     }
 
@@ -137,7 +137,7 @@ exports.addBonus = async (req, res) => {
   const { amount, reason } = req.body;
 
   const staff = await Staff.findById(req.params.id);
-  if (!staff) return res.status(404).json({ msg: "Staff not found" });
+  if (!staff) return res.status(404).json({success:false, msg: "Staff not found" });
 
 const oldSalary = staff.netSalary;
 
@@ -165,6 +165,7 @@ details:reason
 });
 
   res.json({
+    success:true,
     msg: "Bonus added",
     netSalary: staff.netSalary
   });
@@ -542,6 +543,8 @@ details:"Staff profile updated"
 
 res.json({
 
+  success:true,
+
 msg:"Staff updated successfully",
 
 staff
@@ -554,6 +557,7 @@ catch(error){
 console.error(error);
 
 res.status(500).json({
+  success:false,
 msg:"Failed to update staff"
 });
 

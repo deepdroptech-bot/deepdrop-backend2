@@ -15,17 +15,22 @@ exports.createDailySales = async (req, res) => {
 
 if (existingSales) {
   return res.status(400).json({
+    success: false,
     message: "Sales for this date already exist"
   });
 }
 
     res.status(201).json({
+      success: true,
       msg: "Daily sales created as draft",
       sales
     });
   } catch (error) {
-    console.error("Daily sales error:", error);
-    res.status(500).json({ msg: "Failed to fetch sales", error: error.message });
+    res.status(500).json({
+      success: false,
+      msg: "Failed to fetch sales",
+      error: error.message
+    });
   }
 };
 
@@ -35,11 +40,12 @@ exports.submitDailySales = async (req, res) => {
     const sales = await DailySales.findById(req.params.id);
 
     if (!sales) {
-      return res.status(404).json({ msg: "Sales not found" });
+      return res.status(404).json({ success: false, msg: "Sales not found" });
     }
 
     if (sales.approvalStatus !== "draft") {
       return res.status(400).json({
+        success: false,
         msg: "Sales already submitted or approved"
       });
     }
@@ -50,9 +56,10 @@ exports.submitDailySales = async (req, res) => {
 
     await sales.save();
 
-    res.json({ msg: "Daily sales submitted for approval" });
+    res.json({ success: true, msg: "Daily sales submitted for approval" });
   } catch (error) {
     res.status(500).json({
+      success: false,
       msg: "Failed to submit daily sales",
       error: error.message
     });
@@ -63,11 +70,12 @@ exports.approveDailySales = async (req, res) => {
   try {
     const sales = await DailySales.findById(req.params.id);
     if (!sales) {
-      return res.status(404).json({ msg: "Sales not found" });
+      return res.status(404).json({ success: false, msg: "Sales not found" });
     }
 
     if (sales.approvalStatus !== "submitted") {
       return res.status(400).json({
+        success: false,
         msg: "Sales must be submitted before approval"
       });
     }
@@ -78,6 +86,7 @@ exports.approveDailySales = async (req, res) => {
 
     if (!inventory || !bank) {
       return res.status(400).json({
+        success: false,
         msg: "Inventory or Bank record not initialized"
       });
     }
@@ -144,11 +153,12 @@ exports.approveDailySales = async (req, res) => {
 
     await sales.save();
 
-    res.json({ msg: "Daily sales approved and locked" });
+    res.json({ success: true, msg: "Daily sales approved and locked" });
 
   } catch (error) {
     console.error("APPROVE DAILY SALES ERROR:", error);
     res.status(500).json({
+      success: false,
       msg: "Failed to approve daily sales",
       error: error.message
     });
@@ -370,11 +380,12 @@ exports.updateDailySales = async (req, res) => {
     const sales = await DailySales.findById(req.params.id);
 
     if (!sales) {
-      return res.status(404).json({ msg: "Sales record not found" });
+      return res.status(404).json({ success: false, msg: "Sales record not found" });
     }
 
     if (sales.isLocked) {
       return res.status(403).json({
+        success: false,
         msg: "Approved sales cannot be edited"
       });
     }
@@ -387,11 +398,13 @@ exports.updateDailySales = async (req, res) => {
     await sales.save();
 
     res.json({
+      success: true,
       msg: "Daily sales updated",
       sales
     });
   } catch (error) {
     res.status(500).json({
+      success: false,
       msg: "Failed to update daily sales",
       error: error.message
     });
