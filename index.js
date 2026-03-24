@@ -18,14 +18,13 @@ const pdfRouter = require("./routes/pdfRouter");
 
 dotenv.config();
 
-const app = express(); // ✅ CREATE APP FIRST
+const app = express(); 
 
 connectDB();
 
-// ✅ CORS MUST COME AFTER app IS CREATED
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://ekiosadeeppdrop.netlify.app",
+  "https://ekiiosadeepdrop.netlify.app",
 ];
 
 app.use(
