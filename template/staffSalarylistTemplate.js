@@ -29,8 +29,7 @@ text-align:center;
 margin-bottom:20px;
 
 }
-
-.company-footer{
+footer{
 
 text-align:center;
 margin-top:30px;
@@ -65,9 +64,7 @@ font-size:12px;
 </head>
 <body>
 
-<div class="company-header">
-${companyHeader}("Pump Calibration Report")
-</div>
+${companyHeader("Staff Monthly Salary Report")}
 
     <h1>Staff Salary Details</h1>
     <div class="section">
@@ -98,11 +95,9 @@ ${companyHeader}("Pump Calibration Report")
                 <th>${formatCurrency(staffList.reduce((sum, staff) => sum + staff.netSalary, 0))}</th>     
         </table>
     </div>
-    <div class="company-footer">
 
 ${companyFooter()}
 
-</div>
 </body>
 </html>`;
 }

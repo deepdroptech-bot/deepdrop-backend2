@@ -33,7 +33,7 @@ margin-bottom:20px;
 
 }
 
-.company-footer{
+footer{
 
 text-align:center;
 margin-top:30px;
@@ -68,7 +68,7 @@ font-size:12px;
 </head>
 <body>
 <div class="company-header">
-${companyHeader}("Pump Calibration Report")
+${companyHeader("Staff Report")}
 </div>
     <h1>Staff Details</h1>
 
@@ -120,11 +120,8 @@ ${companyHeader}("Pump Calibration Report")
         </table>
     </div>
 
-     <div class="company-footer">
-
 ${companyFooter()}
 
-</div>
 </body>
 </html>`;
 }

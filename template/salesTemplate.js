@@ -35,7 +35,7 @@ margin-bottom:20px;
 
 }
 
-.company-footer{
+footer{
 
 text-align:center;
 margin-top:30px;
@@ -154,9 +154,9 @@ table td{
 
 <body>
 
-<div class="company-header">
-${companyHeader}("Pump Calibration Report")
-</div>
+
+${companyHeader("Daily Sales Report")}
+
 
 <div class="header">
 
@@ -546,11 +546,7 @@ ${sales.notes.map((n) => `<li>${n}</li>`).join("")}
 
 </div>
 
-<div class="company-footer">
-
 ${companyFooter()}
-
-</div>
 
 </body>
 </html>

@@ -22,7 +22,7 @@ margin-bottom:20px;
 
 }
 
-.company-footer{
+footer{
 
 text-align:center;
 margin-top:30px;
@@ -37,10 +37,7 @@ font-size:12px;
 </style>
     </head>
     <body>
-
-    <div class="company-header">
     ${companyHeader("Expenses Report")}
-    </div>
     <div class="section-title">Expenses</div>
     <p><strong>Period:</strong> ${new Date(expenses[0].createdAt).toLocaleDateString()} - ${new Date(expenses[expenses.length - 1].createdAt).toLocaleDateString()}</p>
     <div class="section">
@@ -72,10 +69,7 @@ font-size:12px;
 
     </table>
     </div>
-
-     <div class="company-footer">
     ${companyFooter()}
-    </div>
     </body>
     </html>`;
 }

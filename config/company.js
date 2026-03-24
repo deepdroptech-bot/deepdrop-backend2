@@ -1,6 +1,6 @@
 module.exports = {
 
-logo: `<img src="https://deepdrop-backend2-1.onrender.com/public/logo.png" />`, 
+logo: "https://deepdrop-backend2-1.onrender.com/public/logo.png", 
 
 name:"DeepDrop Energy Ltd",
 

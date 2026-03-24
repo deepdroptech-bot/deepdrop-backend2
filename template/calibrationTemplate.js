@@ -46,7 +46,7 @@ margin-bottom:20px;
 
 }
 
-.company-footer{
+.footer{
 
 text-align:center;
 margin-top:30px;
@@ -113,25 +113,13 @@ font-weight:bold;
 
 }
 
-.footer{
-
-margin-top:40px;
-
-font-size:12px;
-
-color:#888;
-
-}
-
 </style>
 
 </head>
 
 <body>
 
-<div class="company-header">
-${companyHeader}("Pump Calibration Report")
-</div>
+${companyHeader("Pump Calibration Report")}
 
 <div class="header">
 
@@ -243,11 +231,7 @@ ${totalCalibration} Litres
 
 </table>
 
-<div class="company-footer">
-
 ${companyFooter()}
-
-</div>
 
 </body>
 

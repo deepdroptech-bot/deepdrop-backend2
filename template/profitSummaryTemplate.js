@@ -23,7 +23,7 @@ margin-bottom:20px;
 
 }
 
-.company-footer{
+footer{
 
 text-align:center;
 margin-top:30px;
@@ -72,9 +72,7 @@ border-radius:8px;
 
 <body>
 
-<div class="company-header">
 ${companyHeader("Profit Report")}
-</div>
 
 <h2>
 Profit Summary Report
@@ -175,11 +173,7 @@ Total Net Profit:
 
 </h2>
 
-<div class="company-footer">
-
 ${companyFooter()}
-
-</div>
 
 </body>
 
