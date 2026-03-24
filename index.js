@@ -38,6 +38,7 @@ app.use(
 // Middleware
 app.use(express.json());
 app.use("/uploads", express.static("uploads")); // serve uploaded images
+app.use("/public",express.static("public")); 
 
 // Routes
 app.use("/api/auth", authRoutes);

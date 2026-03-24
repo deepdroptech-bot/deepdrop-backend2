@@ -1,3 +1,7 @@
+const companyHeader = require("../helpers/pdfHeader");
+
+const companyFooter = require("../helpers/pdfFooter");
+
 const generateProfitHTML =
 (data)=>{
 
@@ -10,6 +14,22 @@ return `
 body{
 font-family:Arial;
 padding:30px;
+}
+
+.company-header{
+
+text-align:center;
+margin-bottom:20px;
+
+}
+
+.company-footer{
+
+text-align:center;
+margin-top:30px;
+color:#888;
+
+font-size:12px;
 }
 
 table{
@@ -51,6 +71,10 @@ border-radius:8px;
 </style>
 
 <body>
+
+<div class="company-header">
+${companyHeader("Profit Report")}
+</div>
 
 <h2>
 Profit Summary Report
@@ -145,11 +169,17 @@ Other Income:
 
 <h2>
 
-Grand Profit:
+Total Net Profit:
 
 ₦${data.grand}
 
 </h2>
+
+<div class="company-footer">
+
+${companyFooter()}
+
+</div>
 
 </body>
 

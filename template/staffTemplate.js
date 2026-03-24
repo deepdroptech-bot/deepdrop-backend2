@@ -1,3 +1,7 @@
+const companyHeader = require("../helpers/pdfHeader");
+
+const companyFooter = require("../helpers/pdfFooter");
+
 const generateStaffHtml = (staff) => {
     const formatCurrency = (amount) => {
       return amount.toLocaleString("en-NG", {
@@ -21,6 +25,23 @@ return `<!DOCTYPE html>
         h1 {
             color: #007BFF;
         }
+
+        .company-header{
+
+text-align:center;
+margin-bottom:20px;
+
+}
+
+.company-footer{
+
+text-align:center;
+margin-top:30px;
+color:#888;
+
+font-size:12px;
+}
+
         .section {
             margin-bottom: 20px;
         }
@@ -46,6 +67,9 @@ return `<!DOCTYPE html>
     </style>
 </head>
 <body>
+<div class="company-header">
+${companyHeader}("Pump Calibration Report")
+</div>
     <h1>Staff Details</h1>
 
     <div class="section">
@@ -95,6 +119,12 @@ return `<!DOCTYPE html>
             <tr><th>Net Salary</th><td>${formatCurrency(staff.netSalary)}</td></tr>
         </table>
     </div>
+
+     <div class="company-footer">
+
+${companyFooter()}
+
+</div>
 </body>
 </html>`;
 }

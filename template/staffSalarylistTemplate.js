@@ -1,3 +1,7 @@
+const companyHeader = require("../helpers/pdfHeader");
+
+const companyFooter = require("../helpers/pdfFooter");
+
 const staffSalarylistTemplate = (staffList) => {
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(amount);
@@ -18,6 +22,23 @@ const staffSalarylistTemplate = (staffList) => {
         h1 {
             color: #007BFF;
         }
+
+        .company-header{
+
+text-align:center;
+margin-bottom:20px;
+
+}
+
+.company-footer{
+
+text-align:center;
+margin-top:30px;
+color:#888;
+
+font-size:12px;
+}
+
         .section {
             margin-bottom: 20px;
         }
@@ -43,6 +64,11 @@ const staffSalarylistTemplate = (staffList) => {
     </style>
 </head>
 <body>
+
+<div class="company-header">
+${companyHeader}("Pump Calibration Report")
+</div>
+
     <h1>Staff Salary Details</h1>
     <div class="section">
         <div class="section-title">staff information and Salary</div>
@@ -72,6 +98,11 @@ const staffSalarylistTemplate = (staffList) => {
                 <th>${formatCurrency(staffList.reduce((sum, staff) => sum + staff.netSalary, 0))}</th>     
         </table>
     </div>
+    <div class="company-footer">
+
+${companyFooter()}
+
+</div>
 </body>
 </html>`;
 }

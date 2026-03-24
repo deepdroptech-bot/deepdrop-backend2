@@ -1,3 +1,7 @@
+const companyHeader = require("../helpers/pdfHeader");
+
+const companyFooter = require("../helpers/pdfFooter");
+
 const generateCalibrationHTML = (data)=>{
 
     const totalCalibration =
@@ -33,6 +37,22 @@ justify-content:space-between;
 
 margin-bottom:30px;
 
+}
+
+.company-header{
+
+text-align:center;
+margin-bottom:20px;
+
+}
+
+.company-footer{
+
+text-align:center;
+margin-top:30px;
+color:#888;
+
+font-size:12px;
 }
 
 .title{
@@ -108,6 +128,10 @@ color:#888;
 </head>
 
 <body>
+
+<div class="company-header">
+${companyHeader}("Pump Calibration Report")
+</div>
 
 <div class="header">
 
@@ -219,9 +243,9 @@ ${totalCalibration} Litres
 
 </table>
 
-<div class="footer">
+<div class="company-footer">
 
-System Generated Fuel Station Report
+${companyFooter()}
 
 </div>
 

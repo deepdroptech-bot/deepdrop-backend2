@@ -1,3 +1,7 @@
+const companyHeader = require("../helpers/pdfHeader");
+
+const companyFooter = require("../helpers/pdfFooter");
+
 const generateSalesHTML = (sales) => {
 
 const formatCurrency = (num) =>
@@ -22,6 +26,22 @@ body{
 
 h1,h2,h3{
   margin:0;
+}
+
+.company-header{
+
+text-align:center;
+margin-bottom:20px;
+
+}
+
+.company-footer{
+
+text-align:center;
+margin-top:30px;
+color:#888;
+
+font-size:12px;
 }
 
 .header{
@@ -134,9 +154,8 @@ table td{
 
 <body>
 
-<div style="text-align:center;margin-bottom:30px">
-<h1>Deep Drop Energy</h1>
-<h2>Ekiosa</h2>
+<div class="company-header">
+${companyHeader}("Pump Calibration Report")
 </div>
 
 <div class="header">
@@ -524,6 +543,12 @@ ${sales.notes.map((n) => `<li>${n}</li>`).join("")}
   </div>
 
 </div>
+
+</div>
+
+<div class="company-footer">
+
+${companyFooter()}
 
 </div>
 
