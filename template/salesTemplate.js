@@ -175,114 +175,225 @@ ${new Date(sales.salesDate).toLocaleDateString()}
 </div>
 
 <!-- ================= PMS ================= -->
-
 <div class="section">
 
 <div class="section-title">PMS Pump Sales</div>
 
+${sales.PMS.priceSegments.map((segment,segmentIndex)=>{
+
+let segmentLitres = 0;
+
+let segmentAmount = 0;
+
+const rows = segment.pumps.map(pump =>
+
+pump.sales.map(sale=>{
+
+const meter =
+(Number(sale.closingMeter)||0)
+-
+(Number(sale.openingMeter)||0);
+
+const net =
+meter -
+(Number(sale.calibrationLitres)||0);
+
+const amount =
+net *
+(Number(segment.pricePerLitre)||0);
+
+segmentLitres += net;
+
+segmentAmount += amount;
+
+return `
+<tr>
+
+<td>${pump.pumpNumber}</td>
+
+<td>${formatNumber(sale.openingMeter)}</td>
+
+<td>${formatNumber(sale.closingMeter)}</td>
+
+<td>${formatNumber(meter)}</td>
+
+<td>${formatNumber(sale.calibrationLitres)}</td>
+
+<td>${sale.calibrationReason || ""}</td>
+
+<td>${formatNumber(net)}</td>
+
+<td>${formatCurrency(amount)}</td>
+
+</tr>
+`;
+
+}).join("")
+
+).join("");
+
+
+return `
+
+<div style="margin-top:25px">
+
+<div class="section-title">
+
+Price Segment ${segmentIndex+1}
+
+(Price: ${formatCurrency(segment.pricePerLitre)})
+
+</div>
+
 <table>
 
 <thead>
+
 <tr>
+
 <th>Pump</th>
+
 <th>Opening</th>
+
 <th>Closing</th>
+
 <th>Meter Litres</th>
+
 <th>Calibration</th>
-<th>calibration Reason</th>
+
+<th>Reason</th>
+
 <th>Net Litres</th>
+
+<th>Amount</th>
+
 </tr>
+
 </thead>
 
 <tbody>
 
-${sales.PMS.pumps
-  .map(
-    (pump) => `
-<tr>
-<td>${pump.pumpNumber}</td>
-<td>${formatNumber(pump.openingMeter)}</td>
-<td>${formatNumber(pump.closingMeter)}</td>
-<td>${formatNumber(pump.meterLitres)}</td>
-<td>${formatNumber(pump.calibrationLitres)}</td>
-<td>${pump.calibrationReason || ""}</td>
-<td>${formatNumber(pump.netLitresSold)}</td>
-</tr>
-`
-  )
-  .join("")}
+${rows}
 
 </tbody>
 
 </table>
+
+
+<table style="margin-top:10px">
+
+<tr>
+
+<td><strong>Segment Litres</strong></td>
+
+<td>${formatNumber(segmentLitres)}</td>
+
+</tr>
+
+<tr>
+
+<td><strong>Segment Amount</strong></td>
+
+<td>${formatCurrency(segmentAmount)}</td>
+
+</tr>
+
+</table>
+
+</div>
+
+`;
+
+}).join("")}
+
+
 
 <!-- ================= PMS Expenses ================= -->
+
 <div class="section">
 
+<div class="section-title">
 
-<div class="section-title">PMS Expenses</div>
+PMS Expenses
+
+</div>
+
 
 <table style="margin-top:10px;width:50%">
+
 <thead>
+
 <tr>
+
 <th>Description</th>
+
 <th>Amount</th>
+
 </tr>
+
 </thead>
 
 <tbody>
 
-${sales.PMS.expenses
-  .map(
-    (e) => `
+${sales.PMS.expenses.map(e=>`
+
 <tr>
+
 <td>${e.description}</td>
+
 <td>${formatCurrency(e.amount)}</td>
+
 </tr>
-`
-  )
-  .join("")}
+
+`).join("")}
 
 </tbody>
 
 </table>
 
-<table>
-<div class="section-title">PMS Summary</div>
+
+
+<!-- PMS TOTAL SUMMARY -->
+
+<table style="margin-top:20px">
+
+<div class="section-title">
+
+PMS Summary
+
+</div>
+
 
 <tr>
-<td><strong>Total Litres</strong></td>
-<td>${formatNumber(sales.PMS.totalMeterLitres)}</td>
-</tr>
 
-<tr>
-<td><strong>Total Calibrations</strong></td>
-<td>${formatNumber(sales.PMS.totalCalibrationLitres)}</td>
-</tr>
-
-<tr>
 <td><strong>Total Litres Sold</strong></td>
+
 <td>${formatNumber(sales.PMS.totalLitres)}</td>
+
 </tr>
 
 <tr>
-<td><strong>Price / Litre</strong></td>
-<td>${formatCurrency(sales.PMS.pricePerLitre)}</td>
-</tr>
 
-<tr>
-<td><strong>PMS Sales</strong></td>
+<td><strong>Total PMS Sales</strong></td>
+
 <td>${formatCurrency(sales.PMS.totalAmount)}</td>
+
 </tr>
 
 <tr>
-<td><strong>PMS Expenses</strong></td>
+
+<td><strong>Total PMS Expenses</strong></td>
+
 <td>${formatCurrency(sales.PMS.totalExpenses)}</td>
+
 </tr>
 
 <tr>
+
 <td><strong>PMS Net Sales</strong></td>
+
 <td>${formatCurrency(sales.PMS.pNetSales)}</td>
+
 </tr>
 
 </table>
