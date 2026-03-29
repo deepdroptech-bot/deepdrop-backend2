@@ -80,6 +80,7 @@ const meterSaleSchema = new mongoose.Schema(
     openingMeter: Number,
     closingMeter: Number,
     calibrationLitres: { type: Number, default: 0 },
+    calibrationReason: String,
     litresSold: Number,
     pricePerLitre: Number,
     totalAmount: Number,
@@ -193,7 +194,10 @@ const dailySalesSchema = new mongoose.Schema(
     totalExpenses: Number,
     netSales: Number,
 
-    notes: [String],
+    notes:{
+type:[String],
+default:[]
+},
 
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
