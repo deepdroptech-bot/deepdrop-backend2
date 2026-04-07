@@ -5,11 +5,7 @@ const BankBalance = require("../models/bankModel");
 //create daily sales record as draft
 exports.createDailySales = async (req, res) => {
   try {
-    const sales = await DailySales.create({
-      ...req.body,
-      createdBy: req.user.id,
-      approvalStatus: "draft"
-    });
+    
 
     const existingSales = await DailySales.findOne({ salesDate: req.body.salesDate });
 
@@ -19,6 +15,12 @@ if (existingSales) {
     message: "Sales for this date already exist"
   });
 }
+
+const sales = await DailySales.create({
+      ...req.body,
+      createdBy: req.user.id,
+      approvalStatus: "draft"
+    });
 
     res.status(201).json({
       success: true,
