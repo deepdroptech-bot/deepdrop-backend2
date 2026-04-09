@@ -179,15 +179,17 @@ ${new Date(sales.salesDate).toLocaleDateString()}
 
 <div class="section-title">PMS Pump Sales</div>
 
-${sales.PMS.priceSegments.map((segment,segmentIndex)=>{
+${(sales.PMS.priceSegments || []).map((segment,segmentIndex)=>{
 
 let segmentLitres = 0;
 
 let segmentAmount = 0;
 
-const rows = segment.pumps.map(pump =>
+const rows = sales.PMS.pumps.map(pump =>
 
-pump.sales.map(sale=>{
+pump.sales
+.filter(sale=>sale.priceIndex===segmentIndex)
+.map(sale=>{
 
 const meter =
 (Number(sale.closingMeter)||0)
@@ -198,11 +200,13 @@ const net =
 meter -
 (Number(sale.calibrationLitres)||0);
 
+const safeNet = Math.max(net,0);
+
 const amount =
-net *
+safeNet *
 (Number(segment.pricePerLitre)||0);
 
-segmentLitres += net;
+segmentLitres += safeNet;
 
 segmentAmount += amount;
 
@@ -221,7 +225,7 @@ return `
 
 <td>${sale.calibrationReason || ""}</td>
 
-<td>${formatNumber(net)}</td>
+<td>${formatNumber(safeNet)}</td>
 
 <td>${formatCurrency(amount)}</td>
 
@@ -335,7 +339,7 @@ PMS Expenses
 
 <tbody>
 
-${sales.PMS.expenses.map(e=>`
+${(sales.PMS.expenses || []).map(e=>`
 
 <tr>
 
