@@ -24,6 +24,10 @@ exports.generateSalesPDF = async (req, res) => {
       return res.status(404).json({ message: "Sales record not found" });
     }
 
+    const date = new Date(sales.salesDate)
+  .toISOString()
+  .split("T")[0];
+
     const browser = await puppeteer.launch({
       args: chromium.args,
       executablePath: await chromium.executablePath(),
@@ -45,7 +49,7 @@ exports.generateSalesPDF = async (req, res) => {
 
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename=Daily_Sales_${req.params.id}.pdf`,
+      "Content-Disposition": `attachment; filename=Daily_Sales_${date}.pdf`,
     });
 
     res.send(pdf);
@@ -62,6 +66,9 @@ exports.generateStaffPDF = async (req, res) => {
     if (!staff) {
       return res.status(404).json({ message: "Staff record not found" });
     }
+
+    const staffName = `${staff.firstName}_${staff.lastName}`;
+
     const browser = await puppeteer.launch({
       args: chromium.args,
       executablePath: await chromium.executablePath(),
@@ -77,7 +84,7 @@ exports.generateStaffPDF = async (req, res) => {
     await browser.close();
     res.set({
       "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename=Staff_Details_${req.params.id}.pdf`,
+      "Content-Disposition": `attachment; filename=Staff_Details_${staffName}.pdf`,
     });
     res.send(pdf);
   } catch (error) {

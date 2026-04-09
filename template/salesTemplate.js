@@ -185,56 +185,57 @@ let segmentLitres = 0;
 
 let segmentAmount = 0;
 
-const rows = sales.PMS.pumps.map(pump =>
+const { rows, totals } = sales.PMS.pumps.reduce((acc, pump) => {
 
-pump.sales
-.filter(sale=>sale.priceIndex===segmentIndex)
-.map(sale=>{
+  const pumpRows = pump.sales
+    .filter(sale => sale.priceIndex === segmentIndex)
+    .map(sale => {
 
-const meter =
-(Number(sale.closingMeter)||0)
--
-(Number(sale.openingMeter)||0);
+      const opening = Number(sale.openingMeter) || 0;
+      const closing = Number(sale.closingMeter) || 0;
+      const calibration = Number(sale.calibrationLitres) || 0;
 
-const net =
-meter -
-(Number(sale.calibrationLitres)||0);
+      const meter = closing - opening;
+      const net = meter - calibration;
+      const safeNet = Math.max(net, 0);
 
-const safeNet = Math.max(net,0);
+      const amount =
+        safeNet * (Number(segment.pricePerLitre) || 0);
 
-const amount =
-safeNet *
-(Number(segment.pricePerLitre)||0);
+      // ✅ accumulate totals safely
+      acc.totals.meter += meter;
+      acc.totals.calibration += calibration;
+      acc.totals.net += safeNet;
+      acc.totals.amount += amount;
 
-segmentLitres += safeNet;
-
-segmentAmount += amount;
-
-return `
+      return `
 <tr>
-
 <td>${pump.pumpNumber}</td>
-
-<td>${formatNumber(sale.openingMeter)}</td>
-
-<td>${formatNumber(sale.closingMeter)}</td>
-
+<td>${formatNumber(opening)}</td>
+<td>${formatNumber(closing)}</td>
 <td>${formatNumber(meter)}</td>
-
-<td>${formatNumber(sale.calibrationLitres)}</td>
-
+<td>${formatNumber(calibration)}</td>
 <td>${sale.calibrationReason || ""}</td>
-
 <td>${formatNumber(safeNet)}</td>
-
 <td>${formatCurrency(amount)}</td>
-
 </tr>
 `;
 
-}).join("")
+    }).join("");
 
-).join("");
+  acc.rows += pumpRows;
+
+  return acc;
+
+}, {
+  rows: "",
+  totals: {
+    meter: 0,
+    calibration: 0,
+    net: 0,
+    amount: 0
+  }
+});
 
 
 return `
@@ -243,7 +244,7 @@ return `
 
 <div class="section-title">
 
-Price Segment ${segmentIndex+1}
+Price Section ${segmentIndex+1}
 
 (Price: ${formatCurrency(segment.pricePerLitre)})
 
@@ -278,6 +279,24 @@ Price Segment ${segmentIndex+1}
 <tbody>
 
 ${rows}
+
+<tr style="font-weight:bold;background:#f3f4f6">
+
+<td>Total</td>
+<td>-</td>
+<td>-</td>
+
+<td>${formatNumber(totals.meter)}</td>
+
+<td>${formatNumber(totals.calibration)}</td>
+
+<td>-</td>
+
+<td>${formatNumber(totals.net)}</td>
+
+<td>${formatCurrency(totals.amount)}</td>
+
+</tr>
 
 </tbody>
 
