@@ -568,17 +568,35 @@ msg:"Failed to update staff"
 // delete staff
 exports.deleteStaff = async (req, res) => {
   try {
+
     const staff = await Staff.findById(req.params.id);
+
     if (!staff) {
-      return res.status(404).json({ msg: "Staff not found" });
+      return res.status(404).json({
+        success:false,
+        msg:"Staff not found"
+      });
     }
-    await staff.remove();
-    res.json({ msg: "Staff deleted successfully" });
+
+    await staff.deleteOne();   // FIX
+
+    res.json({
+      success:true,
+      msg:"Staff deleted successfully"
+    });
+
   } catch (error) {
-    res.status(500).json({ msg: "Failed to delete staff" });
+
+    console.log(error);
+
+    res.status(500).json({
+      success:false,
+      msg:"Failed to delete staff",
+      error:error.message
+    });
+
   }
 };
-
 // deactivate staff
 exports.deactivateStaff = async (req, res) => {
   try {
