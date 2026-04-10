@@ -5,7 +5,9 @@ const BankBalance = require("../models/bankModel");
 //create daily sales record as draft
 exports.createDailySales = async (req, res) => {
   try {
-    
+    const data = {...req.body };
+    data.salesDate = new Date(data.salesDate);
+data.salesDate.setHours(0, 0, 0, 0);
 
     const existingSales = await DailySales.findOne({ salesDate: req.body.salesDate });
 
@@ -17,7 +19,7 @@ if (existingSales) {
 }
 
 const sales = await DailySales.create({
-      ...req.body,
+      ...data,
       createdBy: req.user.id,
       approvalStatus: "draft"
     });
@@ -30,7 +32,7 @@ const sales = await DailySales.create({
   } catch (error) {
     res.status(500).json({
       success: false,
-      msg: "Failed to fetch sales",
+      msg: "Failed to draft sales",
       error: error.message
     });
   }

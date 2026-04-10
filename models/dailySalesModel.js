@@ -84,7 +84,7 @@ const meterSaleSchema = new mongoose.Schema(
     litresSold: Number,
     pricePerLitre: Number,
     totalAmount: Number,
-    expenses: [expenseSchema],
+    expenses: { type: [expenseSchema], default: [] },
     totalExpenses: { type: Number, default: 0 },
     ANetSales: Number
   },
@@ -170,14 +170,14 @@ async function carryForwardPreviousDayMeters(doc) {
 =========================== */
 const dailySalesSchema = new mongoose.Schema(
   {
-    salesDate: { type: Date, required: true, unique: true },
+    salesDate: { type: Date, required: true },
 
     PMS: {
       priceSegments: [priceSegmentSchema],
       pumps: [pmsPumpSchema],
       totalLitres: Number,
       totalAmount: Number,
-      expenses: [expenseSchema],
+      expenses: { type: [expenseSchema], default: [] },
       totalExpenses: { type: Number, default: 0 },
       pNetSales: Number
     },
@@ -220,6 +220,14 @@ default:[]
 /* ===========================
    PRE-SAVE CALCULATIONS
 =========================== */
+dailySalesSchema.pre("validate", function(next) {
+  if (this.salesDate) {
+    this.salesDate = new Date(this.salesDate);
+    this.salesDate.setHours(0, 0, 0, 0);
+  }
+  next();
+});
+
 dailySalesSchema.pre("save", async function (next) {
   // 1️⃣ Sync pump segments and next day opening meters
   syncPumpSegments(this);
@@ -260,14 +268,20 @@ dailySalesSchema.pre("save", async function (next) {
 
   this.PMS.totalLitres = pmsTotalLitres;
   this.PMS.totalAmount = pmsTotalAmount;
-  this.PMS.totalExpenses = this.PMS.expenses.reduce((sum, e) => sum + e.amount, 0);
+this.PMS.totalExpenses = (this.PMS.expenses || []).reduce(
+  (sum, e) => sum + (e.amount || 0),
+  0
+);
   this.PMS.pNetSales = this.PMS.totalAmount - this.PMS.totalExpenses;
 
   /* ===== AGO CALCULATIONS ===== */
   if (this.AGO) {
     this.AGO.litresSold = (this.AGO.closingMeter || 0) - (this.AGO.openingMeter || 0) - this.AGO.calibrationLitres;
     this.AGO.totalAmount = this.AGO.litresSold * this.AGO.pricePerLitre;
-    this.AGO.totalExpenses = this.AGO.expenses.reduce((sum, e) => sum + e.amount, 0);
+    this.AGO.totalExpenses = (this.AGO.expenses || []).reduce(
+  (sum, e) => sum + (e.amount || 0),
+  0
+);
     this.AGO.ANetSales = this.AGO.totalAmount - this.AGO.totalExpenses;
   }
 
