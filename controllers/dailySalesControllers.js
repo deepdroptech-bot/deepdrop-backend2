@@ -30,12 +30,19 @@ const sales = await DailySales.create({
       sales
     });
   } catch (error) {
-    res.status(500).json({
-      success: false,
-      msg: "Failed to draft sales",
-      error: error.message
-    });
-  }
+
+  console.error("❌ DAILY SALES ERROR:");
+  console.error("Message:", error.message);
+  console.error("Stack:", error.stack);
+  console.error("Body:", req.body);
+  console.error("User:", req.user?.id);
+
+  res.status(500).json({
+    success: false,
+    msg: "Internal server error",
+    error: error.message   // optional (remove in production later)
+  });
+}
 };
 
 //submit daily sales for approval
