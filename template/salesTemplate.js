@@ -302,27 +302,6 @@ ${rows}
 
 </table>
 
-
-<table style="margin-top:10px">
-
-<tr>
-
-<td><strong>Segment Litres</strong></td>
-
-<td>${formatNumber(segmentLitres)}</td>
-
-</tr>
-
-<tr>
-
-<td><strong>Segment Amount</strong></td>
-
-<td>${formatCurrency(segmentAmount)}</td>
-
-</tr>
-
-</table>
-
 </div>
 
 `;
