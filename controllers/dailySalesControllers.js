@@ -102,26 +102,47 @@ exports.approveDailySales = async (req, res) => {
       });
     }
 
+    const safeNumber = (val) => {
+  const num = Number(val);
+  return isNaN(num) ? 0 : num;
+};
+
     /* ===== INVENTORY UPDATE ===== */
-    inventory.fuel.PMS.totalQuantity -= sales.PMS.totalLitres;
-    inventory.fuel.AGO.quantityLitres -= sales.AGO.litresSold;
+    inventory.fuel.PMS.totalQuantity -= safeNumber(sales.PMS.totalLitres);
+inventory.fuel.AGO.quantityLitres -= safeNumber(sales.AGO.litresSold);
 
     //deduct PMS sold from respective wells(Total litres of pump 1 and 2 deducted from well 1 and total litres of pump 3 and 4 deducted from well 2)
-  if (Array.isArray(sales.PMS.pumps)) {
-  const pump1Litres = sales.PMS.pumps
-    .filter(p => p.pumpNumber === 1)
-    .reduce((sum, p) => sum + p.netLitresSold, 0);
-  const pump2Litres = sales.PMS.pumps
-    .filter(p => p.pumpNumber === 2)
-    .reduce((sum, p) => sum + p.netLitresSold, 0);
-  const pump3Litres = sales.PMS.pumps
-    .filter(p => p.pumpNumber === 3)
-    .reduce((sum, p) => sum + p.netLitresSold, 0);
-  const pump4Litres = sales.PMS.pumps
-    .filter(p => p.pumpNumber === 4)
-    .reduce((sum, p) => sum + p.netLitresSold, 0);
-    
+ 
 
+const calculatePumpTotal = (pump) => {
+  if (!Array.isArray(pump.sales)) return 0;
+
+  return pump.sales.reduce((total, sale) => {
+    const opening = safeNumber(sale.openingMeter);
+    const closing = safeNumber(sale.closingMeter);
+    const calibration = safeNumber(sale.calibrationLitres);
+
+    const litres = Math.max(closing - opening, 0);
+    const net = Math.max(litres - calibration, 0);
+
+    return total + net;
+  }, 0);
+};
+
+let pump1Litres = 0;
+let pump2Litres = 0;
+let pump3Litres = 0;
+let pump4Litres = 0;
+
+if (Array.isArray(sales.PMS.pumps)) {
+  sales.PMS.pumps.forEach(p => {
+    const total = calculatePumpTotal(p);
+
+    if (p.pumpNumber === 1) pump1Litres += total;
+    if (p.pumpNumber === 2) pump2Litres += total;
+    if (p.pumpNumber === 3) pump3Litres += total;
+    if (p.pumpNumber === 4) pump4Litres += total;
+  });
   //deduct PMS from respective wells
   inventory.fuel.PMS.wells[0].quantity -= pump1Litres + pump2Litres;
   inventory.fuel.PMS.wells[1].quantity -= pump3Litres + pump4Litres;
