@@ -275,29 +275,32 @@ exports.getSingleDailySales = async (req, res) => {
 //get all daily sales (with pagination, filtering by date range and approval status)
 exports.getAllDailySales = async (req, res) => {
   try {
-    const { page = 1, limit = 10, startDate, endDate, approvalStatus } = req.query;
-    const filter = { isDeleted: false };
+    const { page = 1, limit = 10, approvalStatus, salesDate } = req.query;
 
-    if (startDate && endDate) {
-      filter.salesDate = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate)
-      };
-    }
+const filter = { isDeleted: false };
 
-    if (approvalStatus) {
-      filter.approvalStatus = approvalStatus;
-    }
+if (salesDate) {
+  const start = new Date(salesDate);
+  const end = new Date(salesDate);
+  end.setDate(end.getDate() + 1);
 
-    const pageNum = Number(page) || 1;
-    const limitNum = Number(limit) || 10;
+  filter.salesDate = { $gte: start, $lt: end };
+}
 
-    const skip = (pageNum - 1) * limitNum;
-    const salesRecords = await DailySales.find(filter)
-      .populate("createdBy", "name email role")
-      .sort({ salesDate: -1 })
-      .skip(skip)
-      .limit(Number(limit));
+if (approvalStatus) {
+  filter.approvalStatus = approvalStatus;
+}
+
+const pageNum = Number(page) || 1;
+const limitNum = Number(limit) || 10;
+
+const skip = (pageNum - 1) * limitNum;
+
+const salesRecords = await DailySales.find(filter)
+  .populate("createdBy", "name email role")
+  .sort({ salesDate: -1 })
+  .skip(skip)
+  .limit(limitNum);
 
     const totalRecords = await DailySales.countDocuments(filter);
 

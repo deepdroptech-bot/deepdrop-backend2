@@ -2,7 +2,9 @@ const PMSPL = require("../models/profitOrLossModel");
 const Inventory = require("../models/inventoryModel");
 const Audit = require("../models/dailySalesModel");
 
-exports.getExecutiveDashboard = async (req, res) => {
+const { generateInsights } = require("../helpers/insights");
+
+exports.getExecutiveDashboard = async (req, res) => { 
   try {
     /* ===================================
        DATE HELPERS
@@ -136,6 +138,20 @@ exports.getExecutiveDashboard = async (req, res) => {
         : "Revenue performance is stable.";
 
     /* ===================================
+       INSIGHTS & RECOMMENDATIONS
+    =================================== */
+    const insights = generateInsights({
+      agoProfit: profitData[0]?.totalAgoProfit || 0,
+      pmsProfit: profitData[0]?.totalPmsProfit || 0,
+      growthRate,
+      totalNetSales: totalRevenue,
+      totalExpenses: profitData[0]?.totalExpenses || 0,
+      totalBankBalance: inventory?.bank?.balance || 0,
+      lowProducts,
+      bestProduct: profitData[0]?.bestProduct || null
+    });
+
+    /* ===================================
        FINAL RESPONSE
     =================================== */
     res.json({
@@ -166,6 +182,8 @@ exports.getExecutiveDashboard = async (req, res) => {
         totalPMSLitres: 0,
         totalAGOLitres: 0
       },
+
+      insights,
 
       recentActivities,
       executiveSummary: summary

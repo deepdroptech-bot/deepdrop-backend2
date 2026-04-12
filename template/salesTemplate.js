@@ -181,10 +181,6 @@ ${new Date(sales.salesDate).toLocaleDateString()}
 
 ${(sales.PMS.priceSegments || []).map((segment,segmentIndex)=>{
 
-let segmentLitres = 0;
-
-let segmentAmount = 0;
-
 const { rows, totals } = sales.PMS.pumps.reduce((acc, pump) => {
 
   const pumpRows = pump.sales
