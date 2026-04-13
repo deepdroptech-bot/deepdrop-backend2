@@ -178,6 +178,32 @@ const productInventoryChart = productSlots
     value: p.quantity
   }));
 
+  const fuelHistory =
+  inventory?.fuelHistory
+    ?.sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt))
+    ?.slice(0, 5) || [];
+
+const productHistory =
+  inventory?.productHistory
+    ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    ?.slice(0, 5) || [];
+
+    const formattedFuelHistory = fuelHistory.map((item) => ({
+  type: item.type,
+  quantity: item.Quantity,
+  wellNumber: item.wellNumber,
+  date: item.addedAt,
+  details: item.details
+}));
+
+const formattedProductHistory = productHistory.map((item) => ({
+  slot: item.slotNumber,
+  name: item.itemName,
+  quantity: item.quantity,
+  date: item.createdAt,
+  details: item.details
+}));
+
     /* =========================
        BANK SUMMARY
     ========================= */
@@ -247,7 +273,9 @@ const productInventoryChart = productSlots
         agoQty,
         lowProductsCount: lowProducts.length,
         productChart: productInventoryChart,
-        productSalesChart: productSalesChart
+        productSalesChart: productSalesChart,
+        fuelHistory: formattedFuelHistory,
+        productHistory: formattedProductHistory
       },
 
       bank: {
