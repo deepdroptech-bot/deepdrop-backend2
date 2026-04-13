@@ -156,7 +156,7 @@ exports.generateCalibrationPDF = async(req,res)=>{
  try {
     const { from, to } = req.query;
 
-    const audit = await DailySales.aggregate([
+    const audit = await Sales.aggregate([
       {
         $match: {
           salesDate: {
@@ -260,7 +260,7 @@ exports.generateProfitSummaryPDF = async (req,res)=>{
  try {
     const { from, to } = req.query;
 
-    const summary = await DailySales.aggregate([
+    const summary = await Sales.aggregate([
 
       {
         $match: {
