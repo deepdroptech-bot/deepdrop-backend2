@@ -140,14 +140,42 @@ exports.getExecutiveDashboard = async (req, res) => {
         (p) => p.itemName && p.quantity < 10
       ) || [];
 
-    const productInventoryChart = productSlots
-  .filter(p => p.quantity > 0) // remove empty products
-  .sort((a, b) => b.quantity - a.quantity) // highest first
-  .slice(0, 10) // limit for UI
+   const productChartAgg = await DailySales.aggregate([
+  { $match: approvedFilter },
+
+  { $unwind: "$productsSold" },
+
+  {
+    $group: {
+      _id: "$productsSold.itemName",
+      totalQty: { $sum: "$productsSold.quantitySold" }
+    }
+  },
+
+  { $sort: { totalQty: -1 } },
+  { $limit: 10 }
+]);
+
+const productSalesChart = productChartAgg.map(p => ({
+  name:
+    p._id.length > 12
+      ? p._id.slice(0, 12) + "..."
+      : p._id,
+  value: p.totalQty
+}));
+
+const productSlots = inventory?.products?.slots || [];
+
+const productInventoryChart = productSlots
+  .filter(p => p.quantity > 0)
+  .sort((a, b) => b.quantity - a.quantity)
+  .slice(0, 10)
   .map(p => ({
-    name: p.itemName.length > 12
-  ? p.itemName.slice(0, 12) + "..."
-  : p.itemName
+    name:
+      p.itemName.length > 12
+        ? p.itemName.slice(0, 12) + "..."
+        : p.itemName,
+    value: p.quantity
   }));
 
     /* =========================
@@ -218,7 +246,8 @@ exports.getExecutiveDashboard = async (req, res) => {
         pmsQty,
         agoQty,
         lowProductsCount: lowProducts.length,
-        productChart: productInventoryChart
+        productChart: productInventoryChart,
+        productSalesChart: productSalesChart
       },
 
       bank: {
