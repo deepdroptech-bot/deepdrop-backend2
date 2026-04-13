@@ -140,6 +140,16 @@ exports.getExecutiveDashboard = async (req, res) => {
         (p) => p.itemName && p.quantity < 10
       ) || [];
 
+    const productInventoryChart = productSlots
+  .filter(p => p.quantity > 0) // remove empty products
+  .sort((a, b) => b.quantity - a.quantity) // highest first
+  .slice(0, 10) // limit for UI
+  .map(p => ({
+    name: p.itemName.length > 12
+  ? p.itemName.slice(0, 12) + "..."
+  : p.itemName
+  }));
+
     /* =========================
        BANK SUMMARY
     ========================= */
@@ -207,7 +217,8 @@ exports.getExecutiveDashboard = async (req, res) => {
       inventory: {
         pmsQty,
         agoQty,
-        lowProductsCount: lowProducts.length
+        lowProductsCount: lowProducts.length,
+        productChart: productInventoryChart
       },
 
       bank: {
