@@ -224,7 +224,7 @@ msg:"No calibration records"
 
 
 const html =
-generateCalibrationHTML(audit);
+generateCalibrationHTML(audit, from, to);
 
 const pdf =
 await generatePDF(html);

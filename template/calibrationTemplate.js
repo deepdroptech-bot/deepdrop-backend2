@@ -88,8 +88,7 @@ ${companyHeader("Pump Calibration Report")}
 <div>
   <div class="title">Pump Calibration Report</div>
   <div class="subtitle">
-    Period: ${from} - ${to}<br/>
-    Generated: ${new Date().toLocaleString()}
+    Period: ${formatDate(from)} - ${formatDate(to)}
   </div>
 </div>
 
