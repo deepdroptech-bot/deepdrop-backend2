@@ -222,7 +222,6 @@ msg:"No calibration records"
 
 }
 
-
 const html =
 generateCalibrationHTML(audit, from, to);
 
