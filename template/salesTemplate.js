@@ -5,7 +5,7 @@ const companyFooter = require("../helpers/pdfFooter");
 const generateSalesHTML = (sales) => {
 
 const formatCurrency = (num) =>
-  `₦${(num || 0).toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
+  `₦${(num || 0).toLocaleString()}`;
 
 const formatNumber = (num) =>
   (num || 0).toLocaleString("en-NG", { minimumFractionDigits: 2 });
@@ -581,7 +581,12 @@ ${sales.otherIncome
 
 <tr>
 <td>Total Fuel Sales</td>
-<td>${formatCurrency(sales.totalSalesAmount)}</td>
+<td>${formatCurrency(sales.PMS.totalAmount)}</td>
+</tr>
+
+<tr>
+<td>Total AGO Sales</td>
+<td>${formatCurrency(sales.AGO.totalAmount)}</td>
 </tr>
 
 <tr>
@@ -592,6 +597,11 @@ ${sales.otherIncome
 <tr>
 <td>Total Other Income</td>
 <td>${formatCurrency(sales.totalOtherIncome)}</td>
+</tr>
+
+<tr>
+<td>Total Expenses</td>
+<td>-${formatCurrency(sales.totalExpenses)}</td>
 </tr>
 
 <tr class="total">

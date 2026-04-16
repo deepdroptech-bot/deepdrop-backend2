@@ -25,7 +25,7 @@ connectDB();
 const allowedOrigins = [
   "http://localhost:5173",
   
-  "https://ekiossadeepdrop.netlify.app",
+  "https://ddeepdrop.netlify.app",
 ];
 
 

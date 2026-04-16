@@ -7,8 +7,8 @@ const generateProfitHTML = (data) => {
   const formatDecimal = (num) =>
   (num || 0).toLocaleString("en-NG", { minimumFractionDigits: 2 });
 
- const formatCurrency = (num) =>
-  `₦${(num || 0).toLocaleString("en-NG", { minimumFractionDigits: 2 })}`;
+ const formatCurrency = (value) =>
+    `₦${Number(value || 0).toLocaleString()}`;
 
 
 

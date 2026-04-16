@@ -1,13 +1,13 @@
 module.exports = {
 
-logo: "https://deepdrop-backend2-1.onrender.com/public/logo.png", 
+logo: "https://deepdrop-backend.onrender.com/public/logo.png", 
 
 name:"DeepDrop Energy Ltd",
 
-branch:"Ekiosa Branch",
+branch:"Agbor-Rd Branch",
 
-address:"3rd East Circular Road, MM Way, Benin City, Edo State.",
+address:"Benin-Agbor Expressway, Satana Junction, Benin City, Edo State.",
 
-phone:"0800000000"
+phone:"0901 632 0436"
 
 };
