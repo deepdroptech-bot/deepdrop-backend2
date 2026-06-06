@@ -69,6 +69,7 @@ font-size:12px;
 
     </table>
     </div>
+    Generated on ${new Date().toLocaleString()}
     ${companyFooter()}
     </body>
     </html>`;

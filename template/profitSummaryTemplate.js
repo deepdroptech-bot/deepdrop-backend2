@@ -39,9 +39,9 @@ ${companyHeader("Profit Report")}
 <p>Total Pump 1 & 2 Litres: ${formatDecimal(data.PMS.pump12Litres)}</p>
 <p>Total Pump 3 & 4 Litres: ${formatDecimal(data.PMS.pump34Litres)}</p>
 <p>Total Litres: ${formatDecimal(data.PMS.totalLitres)}</p>
-<p>Revenue: ₦${formatCurrency(data.PMS.revenue)}</p>
-<p>Expenses: ₦${formatCurrency(data.PMS.expenses)}</p>
-<p>Net Profit: ₦${formatCurrency(data.PMS.netProfit)}</p>
+<p>Revenue: ${formatCurrency(data.PMS.revenue)}</p>
+<p>Expenses: ${formatCurrency(data.PMS.expenses)}</p>
+<p>Net Profit: ${formatCurrency(data.PMS.netProfit)}</p>
 
 </div>
 
@@ -49,18 +49,20 @@ ${companyHeader("Profit Report")}
 <h3>AGO Summary</h3>
 
 <p>Litres: ${formatDecimal(data.AGO.litres)}</p>
-<p>Revenue: ₦${formatCurrency(data.AGO.revenue)}</p>
-<p>Expenses: ₦${formatCurrency(data.AGO.expenses)}</p>
-<p>Net Profit: ₦${formatCurrency(data.AGO.netProfit)}</p>
+<p>Revenue: ${formatCurrency(data.AGO.revenue)}</p>
+<p>Expenses: ${formatCurrency(data.AGO.expenses)}</p>
+<p>Net Profit: ${formatCurrency(data.AGO.netProfit)}</p>
 
 </div>
 
 <h3>Other Revenue</h3>
 
-<p>Products: ₦${formatCurrency(data.products.revenue)}</p>
-<p>Other Income: ₦${formatCurrency(data.otherIncome)}</p>
+<p>Products: ${formatCurrency(data.products.revenue)}</p>
+<p>Other Income: ${formatCurrency(data.otherIncome)}</p>
 
-<h2>Total Net Profit: ₦${formatCurrency(data.grandTotalProfit)}</h2>
+<h2>Total Net Profit: ${formatCurrency(data.grandTotalProfit)}</h2>
+
+Generated on ${new Date().toLocaleString()}
 
 ${companyFooter()}
 
