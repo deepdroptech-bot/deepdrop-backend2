@@ -18,7 +18,7 @@ router.get("/staff/:id", auth, allowRoles("admin", "manager", "accountant"), gen
 
 router.get("/staff-salary", auth, allowRoles("admin", "manager", "accountant"), generateStaffSalaryPDF);
 
-router.get("/expenses", auth, allowRoles("admin", "accountant"), generateExpensePDF);
+router.get("/expenses/:id", auth, allowRoles("admin", "accountant"), generateExpensePDF);
 
 router.get("/calibration", auth, allowRoles("admin", "manager", "accountant"), generateCalibrationPDF);
 

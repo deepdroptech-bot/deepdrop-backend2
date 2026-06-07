@@ -167,6 +167,11 @@ exports.getExpenseHistory = async (req, res) => {
 exports.getExpensesForDocument = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!id) {
+      return res.status(400).json({
+        msg: "Document ID is required"
+      });
+    }
     const document = await ExpenseDocument.findById(id)
       .populate("createdBy", "name")
       .populate("closedBy", "name");
