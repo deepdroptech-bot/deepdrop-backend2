@@ -1,78 +1,149 @@
 const companyHeader = require("../helpers/pdfHeader");
-
 const companyFooter = require("../helpers/pdfFooter");
 
-const generateExpenseHTML = (expenses) => {
-    formatCurrency = (amount) => {
-        return new Intl.NumberFormat("en-NG", {
-            style: "currency",
-            currency: "NGN"
-        }).format(amount);
-    }
+const generateExpenseHTML = (expenseDoc = {}) => {
+  const expenses = expenseDoc.expenses || [];
 
-    return `<div class="section">
-    <html>  
-    <head>
+  if (!Array.isArray(expenses) || expenses.length === 0) {
+    return `
+      <html>
+      <body style="font-family: Arial; padding: 30px;">
+        <h2>No expenses found for this document</h2>
+      </body>
+      </html>
+    `;
+  }
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency: "NGN",
+    }).format(amount || 0);
+  };
+
+  const sorted = [...expenses].sort(
+    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+  );
+
+  const firstDate = sorted[0]?.createdAt;
+  const lastDate = sorted[sorted.length - 1]?.createdAt;
+
+  const totalAmount =
+    expenseDoc.totalAmount ||
+    sorted.reduce((sum, e) => sum + (e.amount || 0), 0);
+
+  return `
+  <html>
+  <head>
     <style>
-    body{
-    .company-header{
+      body {
+        font-family: Arial;
+        padding: 30px;
+      }
 
-text-align:center;
-margin-bottom:20px;
+      .company-header {
+        text-align: center;
+        margin-bottom: 20px;
+      }
 
-}
+      footer {
+        text-align: center;
+        margin-top: 30px;
+        color: #888;
+        font-size: 12px;
+      }
 
-footer{
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
 
-text-align:center;
-margin-top:30px;
-color:#888;
+      th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+      }
 
-font-size:12px;
-}
-    font-family:Arial;
+      th {
+        background: #f4f4f4;
+      }
 
-    padding:30px;
-    }
-</style>
-    </head>
-    <body>
+      .total-row {
+        font-weight: bold;
+        background: #f9f9f9;
+      }
+
+      .meta {
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+
+  <body>
+
     ${companyHeader("Expenses Report")}
-    <div class="section-title">Expenses</div>
-    <p><strong>Period:</strong> ${new Date(expenses[0].createdAt).toLocaleDateString()} - ${new Date(expenses[expenses.length - 1].createdAt).toLocaleDateString()}</p>
-    <div class="section">
-    <table>
 
-    <thead>
-    <tr>
-    <th>Description</th>
-    <th>Amount</th>
-    <th>Category</th>
-    </tr>
-    </thead>
-    <tbody>
+    <div class="meta">
+      <h3>${expenseDoc.title || "Expense Report"}</h3>
 
-    ${expenses.map(expense => `
-    <tr>
-    <td>${expense.description}</td>
-    <td>${formatCurrency(expense.amount)}</td>
-    <td>${expense.category}</td>
-    </tr>
-    `).join('')}
-    </tbody>
+      <p>
+        <strong>Period:</strong>
+        ${
+          firstDate
+            ? new Date(firstDate).toLocaleDateString()
+            : "N/A"
+        }
+        -
+        ${
+          lastDate
+            ? new Date(lastDate).toLocaleDateString()
+            : "N/A"
+        }
+      </p>
 
-    <tr>
-    <td><strong>Total Expenses</strong></td>
-    <td>${formatCurrency(expenses.reduce((sum, e) => sum + e.amount, 0))}</td>
-    <td></td>
-    </tr>
-
-    </table>
+      <p>
+        <strong>Status:</strong> ${expenseDoc.status || "N/A"}
+      </p>
     </div>
-    Generated on ${new Date().toLocaleString()}
+
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Amount</th>
+          <th>Category</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        ${sorted
+          .map(
+            (expense) => `
+          <tr>
+            <td>${expense.description || ""}</td>
+            <td>${formatCurrency(expense.amount)}</td>
+            <td>${expense.category || ""}</td>
+          </tr>
+        `
+          )
+          .join("")}
+      </tbody>
+
+      <tfoot>
+        <tr class="total-row">
+          <td>Total Expenses</td>
+          <td>${formatCurrency(totalAmount)}</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <p>Generated on ${new Date().toLocaleString()}</p>
+
     ${companyFooter()}
-    </body>
-    </html>`;
-}
+
+  </body>
+  </html>
+  `;
+};
 
 module.exports = generateExpenseHTML;
