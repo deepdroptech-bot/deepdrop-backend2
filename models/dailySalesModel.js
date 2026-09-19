@@ -91,6 +91,22 @@ const meterSaleSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const meterSaleSchema2 = new mongoose.Schema(
+  {
+    openingMeter: Number,
+    closingMeter: Number,
+    calibrationKG: { type: Number, default: 0 },
+    calibrationReason: String,
+    KGSold: Number,
+    pricePerKG: Number,
+    totalAmount: Number,
+    expenses: { type: [expenseSchema], default: [] },
+    totalExpenses: { type: Number, default: 0 },
+    ANetSales: Number
+  },
+  { _id: false }
+);
+
 /* ===========================
    HELPER FUNCTIONS
 =========================== */
@@ -183,6 +199,8 @@ const dailySalesSchema = new mongoose.Schema(
     },
 
     AGO: meterSaleSchema,
+
+    LPG: meterSaleSchema2,
 
     productsSold: [productSoldSchema],
     totalProductsSales: { type: Number, default: 0 },
@@ -285,6 +303,18 @@ this.PMS.totalExpenses = (this.PMS.expenses || []).reduce(
     this.AGO.ANetSales = this.AGO.totalAmount - this.AGO.totalExpenses;
   }
 
+  
+  /* ===== LPG CALCULATIONS ===== */
+  if (this.LPG) {
+    this.LPG.KGSold = (this.LPG.closingMeter || 0) - (this.LPG.openingMeter || 0) - this.LPG.calibrationLitres;
+    this.LPG.totalAmount = this.LPG.KGSold * this.LPG.pricePerKG;
+    this.LPG.totalExpenses = (this.LPG.expenses || []).reduce(
+  (sum, e) => sum + (e.amount || 0),
+  0
+);
+    this.LPG.ANetSales = this.LPG.totalAmount - this.LPG.totalExpenses;
+  }
+
   /* ===== PRODUCTS SOLD ===== */
   let productsTotal = 0;
   this.productsSold.forEach((p) => {
@@ -297,8 +327,8 @@ this.PMS.totalExpenses = (this.PMS.expenses || []).reduce(
   this.totalOtherIncome = this.otherIncome.reduce((sum, i) => sum + i.amount, 0);
 
   /* ===== TOTALS ===== */
-  this.totalSalesAmount = this.PMS.totalAmount + (this.AGO?.totalAmount || 0) + this.totalProductsSales + this.totalOtherIncome;
-  this.totalExpenses = this.PMS.totalExpenses + (this.AGO?.totalExpenses || 0);
+  this.totalSalesAmount = this.PMS.totalAmount + (this.AGO?.totalAmount || 0) + (this.LPG?.totalAmount || 0) + this.totalProductsSales + this.totalOtherIncome;
+  this.totalExpenses = this.PMS.totalExpenses + (this.AGO?.totalExpenses || 0) + (this.LPG?.totalExpenses || 0);
   this.netSales = this.totalSalesAmount - this.totalExpenses;
 
   next();

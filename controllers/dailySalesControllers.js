@@ -110,6 +110,7 @@ exports.approveDailySales = async (req, res) => {
     /* ===== INVENTORY UPDATE ===== */
     inventory.fuel.PMS.totalQuantity -= safeNumber(sales.PMS.totalLitres);
 inventory.fuel.AGO.quantityLitres -= safeNumber(sales.AGO.litresSold);
+inventory.fuel.LPG.quantityKG -= safeNumber(sales.LPG.litresSold);
 
     //deduct PMS sold from respective wells(Total litres of pump 1 and 2 deducted from well 1 and total litres of pump 3 and 4 deducted from well 2)
  
@@ -171,6 +172,7 @@ if (Array.isArray(sales.PMS.pumps)) {
     /* ===== BANK UPDATE ===== */
     bank.PMS += sales.PMS.pNetSales;
     bank.AGO += sales.AGO.ANetSales;
+    bank.LPG += sales.LPG.ANetSales;
     bank.otherIncome += sales.totalOtherIncome;
     bank.products += sales.totalProductsSales;
 

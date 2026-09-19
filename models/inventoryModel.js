@@ -4,7 +4,7 @@ const FuelInventoryHistorySchema = new mongoose.Schema({
 
   type:{
     type:String,
-    enum:["PMS","AGO"],
+    enum:["PMS","AGO", "LPG"],
     required:true
   },
 
@@ -127,6 +127,12 @@ const inventorySchema = new mongoose.Schema(
           type: Number,
           default: 0
         }
+      },
+      LPG: {
+        quantityKG: {
+          type: Number,
+          default: 0
+        }
       }
     },
 
@@ -158,6 +164,7 @@ const inventorySchema = new mongoose.Schema(
     bank: {
       PMSBalance: { type: Number, default: 0 },
       AGOBalance: { type: Number, default: 0 },
+      LPGBalance: { type: Number, default: 0 },
       otherIncomeBalance: { type: Number, default: 0 }
     },
 

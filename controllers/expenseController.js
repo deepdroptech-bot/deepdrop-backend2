@@ -64,10 +64,12 @@ exports.addExpense = async (req, res) => {
     /* ===== BANK DEDUCTION ===== */
     if (category === "PMS") bank.PMS -= expenseAmount;
     else if (category === "AGO") bank.AGO -= expenseAmount;
+    else if (category === "LPG") bank.LPG -= expenseAmount;
     else if (category === "products") bank.products -= expenseAmount;
+
     else bank.otherIncome -= expenseAmount;
 
-    if (bank.PMS < 0 || bank.AGO < 0 || bank.otherIncome < 0 || bank.products < 0) {
+    if (bank.PMS < 0 || bank.AGO < 0 || bank.LPG < 0 || bank.otherIncome < 0 || bank.products < 0) {
       return res.status(400).json({
         msg: "Insufficient bank balance"
       });

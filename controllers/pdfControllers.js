@@ -315,6 +315,11 @@ exports.generateProfitSummaryPDF = async (req,res)=>{
           totalAGOExpenses: { $first: "$AGO.totalExpenses" },
           totalAGONet: { $first: "$AGO.ANetSales" },
 
+          totalLPGKG: { $first: "$LPG.KGSold" },
+          totalLPGRevenue: { $first: "$LPG.totalAmount" },
+          totalLPGExpenses: { $first: "$LPG.totalExpenses" },
+          totalLPGNet: { $first: "$LPG.lNetSales" },
+
           totalProductSold: { $first: "$totalProductsSales" },
           totalOtherIncome: { $first: "$totalOtherIncome" }
         }
@@ -336,6 +341,11 @@ exports.generateProfitSummaryPDF = async (req,res)=>{
           totalAGORevenue: { $sum: "$totalAGORevenue" },
           totalAGOExpenses: { $sum: "$totalAGOExpenses" },
           totalAGONet: { $sum: "$totalAGONet" },
+
+          totalLPGKG: { $sum: "$totalLPGKG" },
+          totalLPGRevenue: { $sum: "$totalLPGRevenue" },
+          totalLPGExpenses: { $sum: "$totalLPGExpenses" },
+          totalLPGNet: { $sum: "$totalLPGNet" },
 
           totalProductSold: { $sum: "$totalProductSold" },
           totalOtherIncome: { $sum: "$totalOtherIncome" }
@@ -363,6 +373,13 @@ period: { from, to },
         revenue: data.totalAGORevenue || 0,
         expenses: data.totalAGOExpenses || 0,
         netProfit: data.totalAGONet || 0
+      },
+
+    LPG: {
+        KG: data.totalLPGKG || 0,
+        revenue: data.totalLPGRevenue || 0,
+        expenses: data.totalLPGExpenses || 0,
+        netProfit: data.totalLPGNet || 0
       },
 
       products: {

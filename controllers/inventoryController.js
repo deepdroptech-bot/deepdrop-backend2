@@ -76,6 +76,13 @@ exports.addFuelStock = async (req, res) => {
 
     }
 
+    /* ===== LPG ===== */
+    if (fuelType === "LPG") {
+
+      inventory.fuel.LPG.quantityKG += qty;
+
+    }
+
     /* ===== SAVE HISTORY ===== */
 
     inventory.fuelHistory.push({

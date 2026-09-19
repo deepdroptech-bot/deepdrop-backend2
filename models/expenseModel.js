@@ -12,7 +12,7 @@ const expenseItemSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ["PMS", "AGO", "products", "General"],
+      enum: ["PMS", "AGO", "LPG", "products", "General"],
       required: true
     },
     createdAt: {

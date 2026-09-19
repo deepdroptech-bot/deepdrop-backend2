@@ -4,7 +4,7 @@ const bankHistorySchema = new mongoose.Schema({
 
   type:{
     type:String,
-    enum:["PMS","AGO","products","otherIncome"],
+    enum:["PMS","AGO","LPG","products","otherIncome"],
     required:true
   },
 
@@ -39,6 +39,11 @@ const bankBalanceSchema = new mongoose.Schema(
   },
 
   AGO:{
+    type:Number,
+    default:0
+  },
+
+  LPG:{
     type:Number,
     default:0
   },

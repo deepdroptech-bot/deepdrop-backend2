@@ -134,6 +134,7 @@ exports.getExecutiveDashboard = async (req, res) => {
 
     const pmsQty = inventory?.fuel?.PMS?.totalQuantity || 0;
     const agoQty = inventory?.fuel?.AGO?.quantityLitres || 0;
+    const lpgQty = inventory?.fuel?.LPG?.quantityKG || 0;
 
     const lowProducts =
       inventory?.products?.slots.filter(
@@ -212,6 +213,7 @@ const formattedProductHistory = productHistory.map((item) => ({
     const totalBankBalance =
       (bank?.PMS || 0) +
       (bank?.AGO || 0) +
+      (bank?.LPG || 0) +
       (bank?.products || 0) +
       (bank?.otherIncome || 0);
 
@@ -232,6 +234,7 @@ const formattedProductHistory = productHistory.map((item) => ({
     const insights = generateInsights({
       agoProfit: inventory ? (pmsQty * 150 - agoQty * 120) : 0, // Example profit calculation
       pmsProfit: inventory ? (pmsQty * 200 - pmsQty * 150) : 0, // Example profit calculation
+      lpgProfit: inventory ? (lpgQty * 180 - lpgQty * 140) : 0, // Example profit calculation
       growthRate,
       totalExpenses: totalExpensesDoc,
       totalNetSales,
@@ -271,6 +274,7 @@ const formattedProductHistory = productHistory.map((item) => ({
       inventory: {
         pmsQty,
         agoQty,
+        lpgQty,
         lowProductsCount: lowProducts.length,
         productChart: productInventoryChart,
         productSalesChart: productSalesChart,
@@ -283,6 +287,7 @@ const formattedProductHistory = productHistory.map((item) => ({
         breakdown: {
           PMS: bank?.PMS || 0,
           AGO: bank?.AGO || 0,
+          LPG: bank?.LPG || 0,
           products: bank?.products || 0,
           otherIncome: bank?.otherIncome || 0
         },

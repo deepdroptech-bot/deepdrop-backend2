@@ -17,6 +17,7 @@ exports.initializeBank = async (req, res) => {
     const bank = await BankBalance.create({
       PMS: 0,
       AGO: 0,
+      LPG: 0,
       products: 0,
       otherIncome: 0,
       lastUpdatedBy: req.user.id
@@ -46,6 +47,7 @@ const {type,amount,narration} = req.body;
 const validTypes = [
 "PMS",
 "AGO",
+"LPG",
 "products",
 "otherIncome"
 ];
@@ -151,6 +153,17 @@ exports.getAGOBalance = async (req, res) => {
   }
 };
 
+//get LPG balance
+exports.getLPGBalance = async (req, res) => {
+  try {
+    const bank = await BankBalance.findOne();
+    res.json({ LPG: bank.LPG });
+  }
+    catch (error) {
+    res.status(500).json({ msg: "Failed to get LPG balance" });
+  }
+};
+
 //get other income balance
 exports.getOtherIncomeBalance = async (req, res) => {
   try {
@@ -186,6 +199,7 @@ res.json({
 
 PMS:bank.PMS,
 AGO:bank.AGO,
+LPG:bank.LPG,
 products:bank.products,
 otherIncome:bank.otherIncome,
 
