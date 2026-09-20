@@ -102,15 +102,20 @@ exports.approveDailySales = async (req, res) => {
       });
     }
 
-    const safeNumber = (val) => {
-  const num = Number(val);
-  return isNaN(num) ? 0 : num;
+  const safeNumber = (value) => {
+  if (value === null || value === undefined || value === "") {
+    return 0;
+  }
+
+  const number = Number(value);
+
+  return Number.isFinite(number) ? number : 0;
 };
 
     /* ===== INVENTORY UPDATE ===== */
     inventory.fuel.PMS.totalQuantity -= safeNumber(sales.PMS.totalLitres);
 inventory.fuel.AGO.quantityLitres -= safeNumber(sales.AGO.litresSold);
-inventory.fuel.LPG.quantityKG -= safeNumber(sales.LPG.litresSold);
+inventory.fuel.LPG.quantityKG -= safeNumber(sales.LPG.KGSold);
 
     //deduct PMS sold from respective wells(Total litres of pump 1 and 2 deducted from well 1 and total litres of pump 3 and 4 deducted from well 2)
  
@@ -169,12 +174,27 @@ if (Array.isArray(sales.PMS.pumps)) {
 
     //
 
-    /* ===== BANK UPDATE ===== */
-    bank.PMS += sales.PMS.pNetSales;
-    bank.AGO += sales.AGO.ANetSales;
-    bank.LPG += sales.LPG.ANetSales;
-    bank.otherIncome += sales.totalOtherIncome;
-    bank.products += sales.totalProductsSales;
+/* ===== BANK UPDATE ===== */
+
+bank.PMS =
+  safeNumber(bank.PMS) +
+  safeNumber(sales.PMS?.pNetSales);
+
+bank.AGO =
+  safeNumber(bank.AGO) +
+  safeNumber(sales.AGO?.ANetSales);
+
+bank.LPG =
+  safeNumber(bank.LPG) +
+  safeNumber(sales.LPG?.ANetSales);
+
+bank.otherIncome =
+  safeNumber(bank.otherIncome) +
+  safeNumber(sales.totalOtherIncome);
+
+bank.products =
+  safeNumber(bank.products) +
+  safeNumber(sales.totalProductsSales);
 
     await inventory.save();
     await bank.save();

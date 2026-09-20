@@ -306,7 +306,7 @@ this.PMS.totalExpenses = (this.PMS.expenses || []).reduce(
   
   /* ===== LPG CALCULATIONS ===== */
   if (this.LPG) {
-    this.LPG.KGSold = (this.LPG.closingMeter || 0) - (this.LPG.openingMeter || 0) - this.LPG.calibrationLitres;
+    this.LPG.KGSold = (this.LPG.closingMeter || 0) - (this.LPG.openingMeter || 0) - this.LPG.calibrationKG;
     this.LPG.totalAmount = this.LPG.KGSold * this.LPG.pricePerKG;
     this.LPG.totalExpenses = (this.LPG.expenses || []).reduce(
   (sum, e) => sum + (e.amount || 0),
