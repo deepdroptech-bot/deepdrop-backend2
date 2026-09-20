@@ -18,6 +18,9 @@ exports.initializeInventory = async (req, res) => {
       },
       AGO: {
         quantityLitres: 0
+      },
+      LPG: {
+        quantityKG: 0
       }
     },
     products: []
