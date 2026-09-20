@@ -55,6 +55,16 @@ ${companyHeader("Profit Report")}
 
 </div>
 
+<div class="box">
+<h3>LPG Summary</h3>
+
+<p>Litres: ${formatDecimal(data.LPG.KG)}</p>
+<p>Revenue: ${formatCurrency(data.LPG.revenue)}</p>
+<p>Expenses: ${formatCurrency(data.LPG.expenses)}</p>
+<p>Net Profit: ${formatCurrency(data.LPG.netProfit)}</p>
+
+</div>
+
 <h3>Other Revenue</h3>
 
 <p>Products: ${formatCurrency(data.products.revenue)}</p>

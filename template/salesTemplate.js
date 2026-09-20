@@ -493,6 +493,107 @@ ${sales.AGO.expenses
 
 </div>
 
+<!-- ================= LPG ================= -->
+
+<div class="section">
+
+<div class="section-title">LPG Sales</div>
+
+<table>
+
+<tr>
+<td><strong>Opening Meter</strong></td>
+<td>${formatNumber(sales.LPG.openingMeter)}</td>
+</tr>
+
+<tr>
+<td><strong>Closing Meter</strong></td>
+<td>${formatNumber(sales.LPG.closingMeter)}</td>
+</tr>
+
+<tr>
+<td><strong>Calibration</strong></td>
+<td>${formatNumber(sales.LPG.calibrationKG)}</td>
+</tr>
+
+<tr>
+<td><strong>Litres Sold</strong></td>
+<td>${formatNumber(sales.LPG.KGSold)}</td>
+</tr>
+
+<tr>
+<td><strong>Price / Litre</strong></td>
+<td>${formatCurrency(sales.LPG.pricePerKG)}</td>
+</tr>
+
+<tr>
+<td><strong>Total Sales</strong></td>
+<td>${formatCurrency(sales.LPG.totalAmount)}</td>
+</tr>
+
+</table>
+
+</div>
+
+<!-- ================= LPG Expenses ================= -->
+
+<div class="section">
+
+<div class="section-title">LPG Expenses</div>
+
+<table style="margin-top:10px;width:50%">
+<thead>
+<tr>
+<th>Description</th>
+<th>Amount</th>
+</tr>
+</thead>
+
+<tbody>
+
+${sales.LPG.expenses
+  .map(
+    (e) => `
+<tr>
+<td>${e.description}</td>
+<td>${formatCurrency(e.amount)}</td>
+</tr>
+`
+  )
+  .join("")}
+
+</tbody>
+
+</table>
+
+</div>
+
+<!-- ================= LPG Summary ================= -->
+
+<div class="section-title">AGO Summary</div>
+
+<table>
+
+<tr>
+<td><strong>AGO Sales</strong></td>
+<td>${formatCurrency(sales.LPG.totalAmount)}</td>
+</tr>
+
+<tr>
+<td><strong>AGO Expenses</strong></td>
+<td>${formatCurrency(sales.LPG.totalExpenses)}</td>
+</tr>
+
+<tr>
+<td><strong>AGO Net Sales</strong></td>
+<td>${formatCurrency(sales.LPG.ANetSales)}</td>
+</tr>
+
+</table>
+
+</div>
+
+
 <!-- ================= PRODUCTS ================= -->
 
 <div class="section">

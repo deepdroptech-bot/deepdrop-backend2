@@ -52,6 +52,16 @@ exports.getDailyProfitReport = async (req, res) => {
           }
         : null,
 
+      LPG: report.LPG
+        ? {
+            KG: report.LPG.KGSold,
+            price: report.LPG.pricePerKG,
+            revenue: report.LPG.totalAmount,
+            expenses: report.LPG.totalExpenses,
+            netProfit: report.LPG.lNetSales
+          }
+        : null,
+
       products: report.totalProductsSales,
 
       otherIncome: report.totalOtherIncome,
@@ -59,6 +69,7 @@ exports.getDailyProfitReport = async (req, res) => {
       totalNetProfit:
         report.PMS.pNetSales +
         (report.AGO?.ANetSales || 0) +
+        (report.LPG?.netProfit || 0) +
         report.totalProductsSales +
         report.totalOtherIncome
     });
