@@ -570,22 +570,22 @@ ${sales.LPG.expenses
 
 <!-- ================= LPG Summary ================= -->
 
-<div class="section-title">AGO Summary</div>
+<div class="section-title">LPG Summary</div>
 
 <table>
 
 <tr>
-<td><strong>AGO Sales</strong></td>
+<td><strong>LPG Sales</strong></td>
 <td>${formatCurrency(sales.LPG.totalAmount)}</td>
 </tr>
 
 <tr>
-<td><strong>AGO Expenses</strong></td>
+<td><strong>LPG Expenses</strong></td>
 <td>${formatCurrency(sales.LPG.totalExpenses)}</td>
 </tr>
 
 <tr>
-<td><strong>AGO Net Sales</strong></td>
+<td><strong>LPG Net Sales</strong></td>
 <td>${formatCurrency(sales.LPG.ANetSales)}</td>
 </tr>
 
